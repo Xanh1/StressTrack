@@ -1,0 +1,14 @@
+{% extends "base/base.html" %}
+
+{% block content %}
+
+<main class="main container d-flex flex-column justify-content-center text-center">
+    <h1 class="fs-max">Bienvenido a StressTrack</h1>
+    <p class="fs-4">Ayudamos a gestionar el estrés académico para un mejor rendimiento y bienestar.</p>
+    <div class="d-flex justify-content-center align-items-center">
+        <a class="text-dark text-decoration-none fs-7 bg-dark text-white border border border-dark rounded-4 py-1 px-3"
+            href="{% url 'register' %}">Registrarse <i class="fa-solid fa-arrow-right fs-8"></i></a>
+    </div>
+</main>
+
+{% endblock %}

@@ -1,0 +1,78 @@
+body {
+  height: 100vh;
+
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  grid-template-rows: 4.5rem 1fr;
+  grid-template-areas:
+  "header header"
+  "side   main";
+
+  background-color: white;
+}
+
+.header {
+  grid-area: header;
+  background-color: white;
+}
+
+.sidebar{
+  grid-area: side;
+}
+
+.main {
+  grid-area: main;
+  overflow-y: auto;
+}
+
+.fs-7 {
+  font-size: .9rem;
+}
+
+.fs-8 {
+  font-size: .7rem;
+}
+
+.my-4_5 {
+  margin: 2rem 0;
+}
+
+.mb-4_5 {
+  margin-bottom: 2rem;
+}
+
+.bg-good {
+  background-color: #dbffe4;
+}
+
+.bg-not-bad {
+  background-color: #fff4db;
+}
+
+.bg-dangerr {
+  background-color: #ffe4db;
+}
+
+.bg-dying {
+  background-color: #ffcccc;
+}
+
+.bg-inf {
+  background-color: rgb(248, 253, 255);
+}
+
+.text-grisillo {
+  color: #cacaca;
+  font-size: .9rem;
+}
+
+
+.text-gris {
+  color: #8f8f8f;
+  font-size: .9rem;
+}
+
+
+.bg-color-grisillo {
+  background-color: #ececec;
+}

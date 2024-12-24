@@ -1,0 +1,34 @@
+{% extends "base/dashboard_base.html" %}
+
+{% block content %}
+
+{% include "elements/dashboard_sidebar.html" with role=role %}
+
+<main class="main container">
+    <h1>Tareas</h1>
+    <div class="container mb-4">
+        <label class="text-grisillo fw-bold my-2">Curso</label>
+        {% if not tasks %}
+            <div class="bg-inf p-3 rounded-2 text-gris">
+                <i class="fas fa-info-circle"></i> No tienes tareas asignadas por el momento.
+            </div>
+        {% else %}
+            {% for task in tasks %}
+                <div class="p-3 rounded-2 text-gris border border-1">
+                    <div class="row">
+                        <div class="col-10">
+                            <i class="fa-solid fa-list me-3"></i>{{ task.title }}
+                        </div>
+                        <div class="col-2 text-center">
+                            <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                                {{ task.due_date }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</main>
+
+{% endblock %}

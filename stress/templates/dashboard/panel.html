@@ -1,0 +1,73 @@
+{% extends "base/dashboard_base.html" %}
+
+{% block content %}
+
+{% include "elements/dashboard_sidebar.html" with role=role %}
+
+<main class="main container">
+    <div class="container {{ color }} p-4 rounded-4 mb-4">
+        <div class="row">
+            <div class="col-9">
+                <h1>Hola, {{ name }}</h1>
+                <p class="fs-6">Tus niveles de estrés son {{ stress }}. ¡Sigue así! Mantén tus buenos hábitos.
+                </p>
+            </div>
+            <div class="col-3 text-center">
+                <h1>{{ stress }}</h1>
+                <p>Nivel de Estrés</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mb-4">
+        <label class="text-grisillo fw-bold my-2">Tarea</label>
+        {% if not task %}
+            <div class="bg-inf p-3 rounded-2 text-gris">
+                <i class="fas fa-info-circle"></i> No tienes tareas asignadas por el momento.
+            </div>
+        {% else %}
+            <div class="p-3 rounded-2 text-gris border border-1">
+                <div class="row">
+                    <div class="col-10">
+                        <i class="fa-solid fa-list me-3"></i>{{ task.title }}
+                    </div>
+                    <div class="col-2 text-center">
+                        <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                            {{ task.date }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="container mb-4">
+        <label class="text-grisillo fw-bold my-2">Test</label>
+        {% if not test %}
+            <div class="bg-inf p-3 rounded-2 text-gris">
+                <i class="fas fa-info-circle"></i> No tienes tests asignadas por el momento.
+            </div>
+        {% else %}
+            <div class="p-3 rounded-2 text-gris border border-1">
+                <div class="row">
+                    <div class="col-10">
+                        <i class="fa-solid fa-list me-3"></i>{{ test.title }}
+                    </div>
+                    <div class="col-2 text-center">
+                        {% if not test.state %}
+                            <div class="ms-4 p-1 d-inline rounded-4 fs-7">
+                                <a href="{% url 'home' %}" class="text-decoration-none border border-dark text-dark py-1 px-3 rounded-3 fs-7">Realizar Test</a>
+                            </div>
+                        {% else %}    
+                            <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                                Completado
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</main>
+
+{% endblock %}

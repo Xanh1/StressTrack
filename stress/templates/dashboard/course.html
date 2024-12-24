@@ -1,0 +1,37 @@
+{% extends "base/dashboard_base.html" %}
+
+{% block content %}
+
+{% include "elements/dashboard_sidebar.html" with role=role %}
+
+<main class="main container">
+    <h1>Curso</h1>
+    <div class="container mb-4">
+        <label class="text-grisillo fw-bold my-2">Estudiantes</label>
+        {% if not course %}
+            <div class="bg-inf p-3 rounded-2 text-gris">
+                <i class="fas fa-info-circle"></i> No estas matriculado en un curso por el momento.
+            </div>
+        {% else %}
+            {% for student in course %}
+                <div class="p-3 rounded-2 text-gris border border-1">
+                    <div class="row">
+                        <div class="col-5">
+                            <i class="fa-solid fa-user me-3"></i>{{ student.first_name }} {{ student.last_name }}
+                        </div>
+                        <div class="col-5">
+                            {{ student.group }}
+                        </div>
+                        <div class="col-2 text-center">
+                            <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                                Estres: {{ student.stress }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+</main>
+
+{% endblock %}
