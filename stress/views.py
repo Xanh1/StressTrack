@@ -1,13 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
+from .models import Test, Option
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
 from datetime import date
 
-# Create your views here.
-
 def home(request):
+    if request.user.is_authenticated:
+        return redirect('panel')
     return render(request, 'index.html')
 
 def log_in(request):
@@ -23,6 +24,10 @@ def log_in(request):
     else:
         form = CustomAuthenticationForm()
     return render(request, 'login.html', {'form': form})
+
+def log_out(request):
+    logout(request)
+    return redirect('home')
 
 def register(request):
     form = CustomUserCreationForm()
@@ -86,6 +91,7 @@ def panel(request):
         tmp_test = tests.last()
         flg = test_resolve(tmp_test, user)
         test = {
+            'id': tmp_test.id,
             'title': tmp_test.title,
             'state': flg
         }
@@ -134,6 +140,7 @@ def list_tests(request):
         for test in tests:
             answered = test_resolve(test, user)
             list_test.append({
+                'test': test.id,
                 'title': test.title,
                 'state': answered
             })
@@ -144,7 +151,6 @@ def list_tests(request):
     }
 
     return render(request, 'dashboard/test.html', context)
-
 
 @login_required
 def course(request):
@@ -157,3 +163,39 @@ def course(request):
     }
 
     return render(request, 'dashboard/course.html', context)
+
+# I need change this and create a new form, couse I need to add an attribute to share the stress level.
+@login_required
+def profile(request):
+
+    user = request.user
+    form = CustomUserCreationForm(instance=user)
+
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('panel')
+
+    context = {
+        'form': form,
+        'role': user.role,
+    }
+
+    return render(request, 'dashboard/profile.html', context)
+
+@login_required
+def test(request, test_id):
+
+    test = get_object_or_404(Test, id = test_id)
+
+    questions = test.questions.all()
+    
+    context = {
+        'role': request.user.role,
+        'questions': questions,
+        'test': test,
+        'opts': Option.choices
+    }
+
+    return render(request, 'test/test_exe.html', context)
