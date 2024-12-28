@@ -1,38 +1,38 @@
 <aside class="sidebar d-flex flex-column justify-content-between">
     {% if role == 'student' %}
-        <ul class="list-unstyled">
-            <li class="ps-3 py-2"><a class="text-decoration-none text-dark" href="{% url 'panel' %}"><i
+        <ul class="list-unstyled text-center">
+            <li class="py-2"><a class="text-decoration-none text-dark" href="{% url 'panel' %}"><i
                         class="fa-solid fa-table"></i> Panel</a></li>
-            <li class="ps-3 py-2"><a class="text-decoration-none text-dark" href="{% url 'list-test' %}"><i
+            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'list-test' %}"><i
                         class="fa-regular fa-pen-to-square"></i> Test</a></li>
-            <li class="ps-3 py-2"><a class="text-decoration-none text-dark" href="{% url 'list-tasks' %}"><i
+            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'list-tasks' %}"><i
                         class="fa-solid fa-list-check"></i> Tareas</a></li>
-            <li class="ps-3 py-2"><a class="text-decoration-none text-dark" href="{% url 'course' %}"><i
+            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'course' %}"><i
                         class="fa-solid fa-book"></i> Curso</a></li>
         </ul>
     {% elif role == 'teacher' %}
         <ul class="list-unstyled">
-            <li class="ps-3 py-2"><a class="text-decoration-none text-dark" href="{% url 'panel' %}"><i
+            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'panel' %}"><i
                         class="fa-solid fa-table"></i> Panel</a></li>
-            <li class="ps-3 py-2"><a class="text-decoration-none text-dark" href="{% url 'list-test' %}"><i
+            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'list-test' %}"><i
                         class="fa-regular fa-pen-to-square"></i> Test</a></li>
-            <li class="ps-3 py-2"><a class="text-decoration-none text-dark" href="{% url 'list-tasks' %}"><i
+            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'list-tasks' %}"><i
                         class="fa-solid fa-list-check"></i> Tarea</a></li>
-            <li class="ps-3 py-2"><a class="text-decoration-none text-dark" href="{% url 'list-tasks' %}"><i
+            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'list-tasks' %}"><i
                         class="fa-solid fa-list-check"></i> Curso</a></li>
         </ul>
     {% elif role == 'superuser' %}
         <ul class="list-unstyled">
-            <li class="ps-3 py-2"><a class="text-decoration-none text-dark" href="{% url 'panel' %}"><i
+            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'panel' %}"><i
                         class="fa-solid fa-table"></i> Panel</a></li>
-            <li class="ps-3 py-2"><a class="text-decoration-none text-dark" href="{% url 'list-test' %}"><i
+            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'list-test' %}"><i
                         class="fa-regular fa-pen-to-square"></i> Test</a></li>
-            <li class="ps-3 py-2"><a class="text-decoration-none text-dark" href="{% url 'list-tasks' %}"><i
+            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'list-tasks' %}"><i
                         class="fa-solid fa-list-check"></i> Tareas</a></li>
         </ul>
     {% endif %}
-    <ul class="list-unstyled">
-        <li class="ps-3"><a class="text-decoration-none text-dark" href="{% url 'home' %}"><i
+    <ul class="list-unstyled text-center">
+        <li class=""><a class="text-decoration-none text-dark" href="{% url 'home' %}"><i
                     class="fa-solid fa-gear"></i> Configuración</a></li>
     </ul>
 </aside> 
