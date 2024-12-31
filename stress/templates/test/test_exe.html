@@ -1,0 +1,33 @@
+{% extends "base/dashboard_base.html" %}
+
+{% block content %}
+
+{% include "elements/dashboard_sidebar.html" with role=role %}
+
+<main class="main container">
+    <h1>{{ test.title }}</h1>
+    <div class="container mb-4">
+        {% for question in questions %}
+            <label class="text-grisillo fw-bold my-2">
+                {{ question.description }}
+            </label>
+            <div class="row">
+                {% for option_value, option_label in opts %}
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-2 mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" 
+                                   name="question_{{ question.id }}" 
+                                   value="{{ option_value }}" 
+                                   id="option_{{ question.id }}_{{ option_value }}">
+                            <label class="form-check-label" for="option_{{ question.id }}_{{ option_value }}">
+                                {{ option_label }}
+                            </label>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor%}
+    </div>
+</main>
+
+{% endblock %}
