@@ -10,6 +10,30 @@ body {
   
   background-color: white;
 }
+
+/* Estilo del contenedor del scrollbar */
+::-webkit-scrollbar {
+  width: 12px; /* Ancho del scroll vertical */
+  height: 12px; /* Altura del scroll horizontal */
+}
+
+/* Estilo del track o fondo del scrollbar */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 6px;
+}
+
+/* Estilo de la barra de desplazamiento */
+::-webkit-scrollbar-thumb {
+  background: #888; 
+  border-radius: 6px;
+}
+
+/* Cambiar el color al hacer hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+
   
 .header {
   grid-area: header;

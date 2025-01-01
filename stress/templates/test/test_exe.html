@@ -4,17 +4,18 @@
 
 {% include "elements/dashboard_sidebar.html" with role=role %}
 
-<main class="main container">
-    <h1>{{ test.title }}</h1>
-    <div class="container mb-4">
+<main class="main container p-4">
+    <h1 class="">{{ test.title }}</h1>
+    <form id="test-form" method="POST" class="container my-4">
+        {% csrf_token %}
         {% for question in questions %}
-            <label class="text-grisillo fw-bold my-2">
+            <label class="fw-semibold my-2 text-title-gris">
                 {{ question.description }}
             </label>
-            <div class="row">
+            <div class="row mt-2">
                 {% for option_value, option_label in opts %}
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-2 mb-3">
-                        <div class="form-check">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+                        <div class="form-check fs-7">
                             <input class="form-check-input" type="radio" 
                                    name="question_{{ question.id }}" 
                                    value="{{ option_value }}" 
@@ -27,7 +28,43 @@
                 {% endfor %}
             </div>
         {% endfor%}
-    </div>
+        <div class="text-center pt-4">
+            <button type="submit" class="text-white text-decoration-none fs-7 py-1 bg-dark px-3 border border-2 border-dark rounded-4">Terminar Test</button>
+        </div>
+    </form>
 </main>
 
+<script>
+    document.getElementById("test-form").addEventListener("submit", function(event) {
+        const questions = document.querySelectorAll('[name^="question_"]');
+        const questionGroups = new Set();
+    
+        questions.forEach(question => {
+            questionGroups.add(question.name);
+        });
+    
+        let isValid = true;
+        questionGroups.forEach(groupName => {
+            const selectedOption = document.querySelector(`[name="${groupName}"]:checked`);
+            if (!selectedOption) {
+                isValid = false;
+                const questionLabel = document.querySelector(`label[for="${groupName}"]`);
+                questionLabel?.classList.add("text-danger");
+            }
+        });
+    
+        if (!isValid) {
+            event.preventDefault();
+            Swal.fire({
+                title: "Error",
+                text: "Por favor selecciona una opción para todas las preguntas.",
+                icon: "error",
+            });
+        }
+        
+    });
+</script>
+
 {% endblock %}
+
+    

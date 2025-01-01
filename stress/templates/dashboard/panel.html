@@ -4,8 +4,10 @@
 
 {% include "elements/dashboard_sidebar.html" with role=role %}
 
-<main class="main container p-4">
-    <div class="container {{ color }} p-4 rounded-4 mb-4">
+{% include "elements/messages.html" %}
+
+<main class="main p-4">
+    <div class="container {{ color }} p-4 rounded-4 my-4">
         <div class="row">
             <div class="col-9">
                 <h1>Hola, {{ name }}</h1>

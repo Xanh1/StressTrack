@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
-from .models import Test, Option
+from .models import Test, Option, Answer
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
 from datetime import date
@@ -100,7 +101,7 @@ def panel(request):
 
     context['task'] = task
     context['test'] = test
-
+    
     return render(request, 'dashboard/panel.html', context)
 
 @login_required
@@ -184,13 +185,29 @@ def profile(request):
 
     return render(request, 'dashboard/profile.html', context)
 
+
 @login_required
-def test(request, test_id):
-
+def test(request, test_id):        
     test = get_object_or_404(Test, id = test_id)
-
     questions = test.questions.all()
-    
+
+    if request.method == 'POST':
+        tmp_stress = 0
+        for question in questions:
+            selected_option_value = request.POST.get(f'question_{question.id}')
+            if selected_option_value:
+                Answer.objects.create(
+                    student=request.user,
+                    question=question,
+                    option=int(selected_option_value)
+                )
+                tmp_stress += int(selected_option_value)
+        
+        request.user.stress = tmp_stress
+        request.user.save()
+        messages.success(request, 'El test se ha completado satisfactoriamente')    
+        return redirect('list-test')
+        
     context = {
         'role': request.user.role,
         'questions': questions,

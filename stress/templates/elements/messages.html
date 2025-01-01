@@ -1,0 +1,11 @@
+{% if messages %} 
+  {% for m in messages %}
+  <script>
+    Swal.fire({
+      title: "Error",
+      text: "{{ m }}",
+      icon: "error",
+    });
+  </script>
+  {% endfor %} 
+{% endif %}

@@ -4,9 +4,9 @@
 
 {% include "elements/dashboard_sidebar.html" with role=role %}
 
-<main class="main container">
-    <h1>Perfil</h1>
-    <div class="container mb-4">
+<main class="main p-4">
+    <div class="container my-4">
+        <h1>Perfil</h1>
         <form action="" method="POST" class="custom-container mb-2">
             {% csrf_token %}
             <div class="row mb-3">
