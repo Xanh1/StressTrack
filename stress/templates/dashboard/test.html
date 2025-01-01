@@ -8,8 +8,15 @@
 
 <main class="main p-4">
     <div class="container my-4">
-        <h1>Test</h1>
-        <label class="text-grisillo fw-bold my-2">Test</label>
+        <div class="row">
+            <p class="col-11 m-0 fw-bold fs-1">Test</p>
+            {% if role == 'teacher' %}
+                <div class="col-1 d-flex flex-column justify-content-center">
+                    <a class="fs-7 text-center rounded-4 border border-dark border-2 text-dark text-decoration-none py-1 px-2" href=""><i class="fa-solid fa-plus fs-8"></i> Nuevo</a>
+                </div>
+            {% endif %}
+        </div>
+        <label class="text-grisillo fw-bold my-2">Lista</label>
         {% if not tests %}
             <div class="bg-inf p-3 rounded-2 text-gris">
                 <i class="fas fa-info-circle"></i> No tienes tests asignadas por el momento.
@@ -18,20 +25,34 @@
             {% for test in tests %}
                 <div class="p-3 rounded-2 text-gris border border-1">
                     <div class="row">
-                        <div class="col-10">
-                            <i class="fa-solid fa-list me-3"></i>{{ test.title }}
-                        </div>
-                        <div class="col-2 text-center">
-                            {% if not test.state %}
-                                <div class="ms-4 p-1 d-inline rounded-4 fs-7">
-                                    <a href="{% url 'test' test.test %}" class="text-decoration-none border border-dark text-dark py-1 px-3 rounded-3 fs-7">Realizar Test</a>
-                                </div>
-                            {% else %}    
-                                <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
-                                    Completado
-                                </div>
-                            {% endif %}
-                        </div>
+                        {% if role == 'student' %}
+                            <div class="col-10">
+                                <i class="fa-solid fa-list me-3"></i>{{ test.title }}
+                            </div>
+                            <div class="col-2 text-center">
+                                {% if not test.state %}
+                                    <div class="ms-4 p-1 d-inline rounded-4 fs-7">
+                                        <a href="{% url 'test' test.test %}" class="text-decoration-none border border-dark text-dark py-1 px-3 rounded-3 fs-7">Realizar Test</a>
+                                    </div>
+                                {% else %}
+                                    <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                                        Completado
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="col-11">
+                                <i class="fa-solid fa-list me-3"></i>{{ test.title }}
+                            </div>
+                            <div class="col-1 text-center">
+                                <a href="" class="mx-1 text-decoration-none text-not-bad" title="Editar">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
+                                <a href="" class="mx-1 text-decoration-none text-dying" title="Eliminar">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
