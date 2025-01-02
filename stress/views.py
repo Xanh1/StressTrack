@@ -216,3 +216,14 @@ def test(request, test_id):
     }
 
     return render(request, 'test/test_exe.html', context)
+
+@login_required
+def create_task(request):
+
+    user = request.user
+
+    if user.teaching_courses.count() == 0:
+        messages.error(request,"No esta asignado a un curso por el momento")
+        return redirect('list-tasks')
+
+    return render(request, 'index.html')

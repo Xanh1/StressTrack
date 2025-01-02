@@ -16,5 +16,8 @@ urlpatterns = [
     path('course/', views.course, name='course'),
 
     # test
-    path('test/<int:test_id>/', views.test, name = 'test')
+    path('test/<int:test_id>/', views.test, name = 'test'),
+
+    # task
+    path('tasks/create', views.create_task, name='create-task'),
 ]
