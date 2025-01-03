@@ -7,39 +7,151 @@
 {% include "elements/messages.html" %}
 
 <main class="main p-4">
-    <div class="container my-4">
+    <div class="my-4">
         <div class="row">
             <div class="col-10 p-0">
                 <h1 class="m-0">Tareas</h1>
             </div>
             {% if role == 'teacher' %}
-                <div class="col-2 d-flex flex-column justify-content-center">
-                    <a class="fs-7 text-center rounded-4 border border-dark border-2 text-dark text-decoration-none py-1 px-2" href="{% url 'create-task' %}"><i class="fa-solid fa-plus fs-8"></i> Nuevo</a>
-                </div>
+                {% if course %}
+                    <div class="col-2 d-flex flex-column justify-content-center">
+                        <button 
+                            class="fs-7 text-center rounded-4 bg-white border border-dark border-2 text-dark text-decoration-none py-1 px-2" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#addTaskModal">
+                            <i class="fa-solid fa-plus fs-8"></i> Nuevo
+                        </button>
+                    </div>
+                {% endif %}
             {% endif %}
         </div>
-        <label class="text-grisillo fw-bold my-2">Curso</label>
+        <label class="text-grisillo fw-bold my-2">
+            {% if course %}
+                {{ course.name }}
+            {% else %}
+                Curso
+            {% endif %}
+        </label>
         {% if not tasks %}
             <div class="bg-inf p-3 rounded-2 text-gris">
                 <i class="fas fa-info-circle"></i> No existen tareas asignadas por el momento.
             </div>
         {% else %}
             {% for task in tasks %}
-                <div class="p-3 rounded-2 text-gris border border-1">
-                    <div class="row">
-                        <div class="col-10">
-                            <i class="fa-solid fa-list me-3"></i>{{ task.title }}
-                        </div>
-                        <div class="col-2 text-center">
-                            <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
-                                {{ task.due_date }}
+                {% if role == 'student' %}
+                    <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                        <div class="row">
+                            <div class="col-10">
+                                <i class="fa-solid fa-list me-3"></i>{{ task.title }}
+                            </div>
+                            <div class="col-2 text-center">
+                                <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                                    {{ task.due_date }}
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                {% else %}
+                    <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                        <div class="row">
+                            <div class="col-9">
+                                <i class="fa-solid fa-list me-3"></i>{{ task.title }}
+                            </div>
+                            <div class="col-2 text-center">
+                                <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                                    {{ task.due_date }}
+                                </div>
+                            </div>
+                            <div class="col-1 text-center">
+                                <a  href="#"
+                                    class="mx-1 text-decoration-none text-not-bad edit-task" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#updateModal"
+                                    data-task='{"id": "{{ task.id }}", "title": "{{ task.title }}", "due_date": "{{ task.due_date }}"}' 
+                                    title="Editar">
+                                    <i class="fa-solid fa-pencil"></i>
+                                </a>
+                                <a href="{% url 'delete-task' task.id %}" class="mx-1 text-decoration-none text-dying" title="Eliminar">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
             {% endfor %}
         {% endif %}
     </div>
 </main>
+
+
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="addTaskModalLabel">Crear Tarea</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm" method="post" >
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="title" class="d-block pb-1 fs-7 fw-bold">Título</label>
+                        <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="title" name="title" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="due_date" class="d-block pb-1 fs-7 fw-bold">Fecha de entrega</label>
+                        <input type="date" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="due_date" name="due_date">
+                    </div>
+                    <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Agregar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="updateModalLabel">Editar Tarea</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="taskFormUpdate" method="post" >
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="title" class="d-block pb-1 fs-7 fw-bold">Título</label>
+                        <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="title_update" name="title" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="due_date" class="d-block pb-1 fs-7 fw-bold">Fecha de entrega</label>
+                        <input type="date" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="due_date_update" name="due_date">
+                    </div>
+                    <button type="submit" name="form-update" value="form-update" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Editar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.edit-task').forEach(button => {
+        button.addEventListener('click', function () {
+            
+            const taskData = JSON.parse(this.getAttribute('data-task'));
+            const date = new Date(taskData.due_date);
+            let formattedDate = date.toISOString().split('T')[0];
+
+
+            document.getElementById('taskFormUpdate').setAttribute('data-task-id', taskData.id);
+            document.getElementById('title_update').value = taskData.title;
+            document.getElementById('due_date_update').value = formattedDate;
+        });
+    });
+});
+
+</script>
 
 {% endblock %}

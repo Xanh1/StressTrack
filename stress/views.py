@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
-from .models import Test, Option, Answer
+from .models import Test, Option, Answer, Task
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
 from datetime import date
@@ -109,7 +109,30 @@ def list_tasks(request):
 
     user = request.user
 
-    course = user.course
+    if request.method == 'POST':
+
+        title = request.POST.get('title')
+        due_date = request.POST.get('due_date')
+        course = user.teaching_courses.first()
+
+        if 'form-update' in request.POST:
+            task = get_object_or_404(Task, title=title, course=course)
+            
+            task.title = title
+            task.due_date = due_date
+            task.save()
+            messages.success(request, "La tarea se ha actualizado satisfactoriamente")
+
+            return redirect('list-tasks')
+        else:
+            response = create_task(title, due_date, course)
+            messages.success(request, response)
+            return redirect('list-tasks')
+
+    if user.role == 'student':
+        course = user.course
+    else:
+        course = user.teaching_courses.first()
 
     if course:
         tasks = course.tasks.all()
@@ -119,6 +142,7 @@ def list_tasks(request):
     context = {
         'tasks': tasks,
         'role': user.role,
+        'course': course,
     }
 
     return render(request, 'dashboard/task.html', context)
@@ -156,7 +180,10 @@ def list_tests(request):
 @login_required
 def course(request):
 
-    course = request.user.course.students.all()
+    course = request.user.course
+
+    if course:
+        course.students.all()
 
     context = {
         'course': course,
@@ -184,7 +211,6 @@ def profile(request):
     }
 
     return render(request, 'dashboard/profile.html', context)
-
 
 @login_required
 def test(request, test_id):        
@@ -217,13 +243,26 @@ def test(request, test_id):
 
     return render(request, 'test/test_exe.html', context)
 
+def create_task(title, due_date, course):
+
+    if not due_date:
+        return "Llena todos los campos"
+
+    task = Task.objects.create(
+        title=title, 
+        due_date=due_date, 
+        course=course
+    )
+
+    return "La tarea se ha creado satisfactoriamente"
+
 @login_required
-def create_task(request):
+def delete_task(request, task_id):
 
     user = request.user
+    course = user.teaching_courses.first()
+    task = get_object_or_404(Task, id=task_id, course=course)
 
-    if user.teaching_courses.count() == 0:
-        messages.error(request,"No esta asignado a un curso por el momento")
-        return redirect('list-tasks')
-
-    return render(request, 'index.html')
+    task.delete()
+    messages.success(request, 'La tarea se ha eliminado correctamente')
+    return redirect('list-tasks')

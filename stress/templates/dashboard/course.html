@@ -6,12 +6,27 @@
 
 <main class="main p-4">
     <div class="container my-4">
-        <h1>Curso</h1>
+        <div class="row">
+            <div class="col-10 p-0">
+                <h1 class="m-0">Curso</h1>
+            </div>
+            {% if role == 'teacher' %}
+                <div class="col-2 d-flex flex-column justify-content-center">
+                    <a class="fs-7 text-center rounded-4 border border-dark border-2 text-dark text-decoration-none py-1 px-2" href="{% url 'create-task' %}"><i class="fa-solid fa-plus fs-8"></i> Crear grupos</a>
+                </div>
+            {% endif %}
+        </div>
         <label class="text-grisillo fw-bold my-2">Estudiantes</label>
         {% if not course %}
-            <div class="bg-inf p-3 rounded-2 text-gris">
-                <i class="fas fa-info-circle"></i> No estas matriculado en un curso por el momento.
-            </div>
+            {% if role == 'student' %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No estas matriculado a un curso por el momento.
+                </div>
+            {% else %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No estas asignado a un curso por el momento.
+                </div>
+            {% endif %}
         {% else %}
             {% for student in course %}
                 <div class="p-3 rounded-2 text-gris border border-1">
