@@ -4,76 +4,129 @@
 
 {% include "elements/dashboard_sidebar.html" with role=role %}
 
+{% include "elements/messages.html" %}
+
 <main class="main p-4">
-    <div class="container my-4">
-        <h1>Perfil</h1>
-        <form action="" method="POST" class="custom-container mb-2">
+    <div class="row">
+        <div class="col-12 p-0">
+            <h1 class="m-0">Configuración</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 mt-2">
+            <label class="text-grisillo fw-bold my-2">Perfil General</label>
+            <form action="" method="POST" class="mb-2 p-2">
+                {% csrf_token %}
+                <div class="row mb-3">
+                    <div class="col-4">
+                        <label class="d-block pb-1 fs-7 fw-bold" for="">Nombre</label>
+                        {{ form.first_name }}
+                        <div>
+                            {% for error in form.first_name.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <label class="d-block pb-1 fs-7 fw-bold" for="">Apellido</label>
+                        {{ form.last_name }}
+                        <div>
+                            {% for error in form.last_name.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-8">
+                        <label class="d-block pb-1 fs-7 fw-bold" for="">Dni</label>
+                        {{ form.dni }}
+                        <div>
+                            {% for error in form.dni.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-8">
+                        <label class="d-block pb-1 fs-7 fw-bold" for="">Correo electrónico</label>
+                        {{ form.email }}
+                        <div>
+                            {% for error in form.email.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="d-flex justify-content-start mt-4 pt-2">
+                    <button class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3"
+                        type="submit" name="form-update-user" value="form-update-user">Actualizar</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-6 mt-2">
+            <label class="text-grisillo fw-bold my-2">Contraseña</label>
+            <form action="" method="POST" class="mb-2 p-2">
+                {% csrf_token %}
+    
+                <div class="row mb-3">
+                    <div class="col-8">
+                        <label class="d-block pb-1 fs-7 fw-bold" for="">Contraseña actual</label>
+                        {{ form_pass.old_password }}
+                        <div>
+                            {% for error in form_pass.old_password.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-8">
+                        <label class="d-block pb-1 fs-7 fw-bold" for="">Nueva contraseña</label>
+                        {{ form_pass.new_password1 }}
+                        <div>
+                            {% for error in form_pass.new_password1.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-8">
+                        <label class="d-block pb-1 fs-7 fw-bold" for="">Confirmar nueva contraseña</label>
+                        {{ form_pass.new_password2 }}
+                        <div>
+                            {% for error in form_pass.new_password2.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="d-flex justify-content-start mt-4 pt-2">
+                    <button class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3"
+                        type="submit" name="form-update-pass" value="form-update-pass">Actualizar contraseña</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div>
+        <label class="text-grisillo fw-bold mt-4 mb-2">Estres</label>
+        <form method="post" class="p-2">
             {% csrf_token %}
-            <div class="row mb-3">
-                <div class="col-6">
-                    <label class="d-block pb-1 fs-7 fw-bold" for="">Nombre</label>
-                    {{ form.first_name }}
-                    <div>
-                        {% for error in form.first_name.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="col-6">
-                    <label class="d-block pb-1 fs-7 fw-bold" for="">Apellido</label>
-                    {{ form.last_name }}
-                    <div>
-                        {% for error in form.last_name.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-    
-            <div class="mb-3">
-                <label class="d-block pb-1 fs-7 fw-bold" for="">Dni</label>
-                {{ form.dni }}
-                <div>
-                    {% for error in form.dni.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            </div>
-    
-            <div class="mb-3">
-                <label class="d-block pb-1 fs-7 fw-bold" for="">Correo Electrónico</label>
-                {{ form.email }}
-                <div>
-                    {% for error in form.email.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                </div>
-            </div>
-    
-            <div class="row mb-3">
-                <div class="col-6">
-                    <label class="d-block pb-1 fs-7 fw-bold" for="">Contraseña</label>
-                    {{ form.password1 }}
-                    <div>
-                        {% for error in form.password1.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                </div>
-                <div class="col-6">
-                    <label class="d-block pb-1 fs-7 fw-bold" for="">Verificar Contraseña</label>
-                    {{ form.password2 }}
-                    <div>
-                        {% for error in form.password2.errors %}
-                            <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-    
-            <div class="d-flex justify-content-center mt-4 pt-2">
-                <button class="w-100 fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3"
-                    type="submit" name="form-register" value="form-register">Registrarse</button>
+            <label class="d-block mb-3">
+                <input type="checkbox" name="share_stress_level" {% if share_stress %}checked{% endif %}>
+                Compartir nivel de estrés
+            </label>
+            <div class="d-flex justify-content-start">
+                <button class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3"
+                    type="submit" name="form-stress-share" value="form-stress-share">Guardar</button>
             </div>
         </form>
     </div>

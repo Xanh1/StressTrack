@@ -49,6 +49,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
 
     stress = models.IntegerField(default=0)
+    share_stress_level = models.BooleanField(default=False)
 
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='students', null=True, blank=True)
     group = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='members', null=True, blank=True)

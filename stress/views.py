@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
-from .forms import CustomUserCreationForm, CustomAuthenticationForm
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserUpdateForm, CustomPasswordChangeForm
 from .models import Test, Option, Answer, Task
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
@@ -183,11 +183,16 @@ def course(request):
     course = request.user.course
 
     if course:
-        course.students.all()
+        students = course.students.all()
+        teacher = course.teacher
+    else:
+        students = None
+        teacher = None
 
     context = {
-        'course': course,
-        'role': request.user.role
+        'students': students,
+        'role': request.user.role,
+        'teacher': teacher
     }
 
     return render(request, 'dashboard/course.html', context)
@@ -197,16 +202,34 @@ def course(request):
 def profile(request):
 
     user = request.user
-    form = CustomUserCreationForm(instance=user)
+    form = CustomUserUpdateForm(instance=user)
+    form_pass = CustomPasswordChangeForm(user=user)
 
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            return redirect('panel')
+        if 'form-update-user' in request.POST:
+            form = CustomUserUpdateForm(request.POST, instance=user)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Se ha actualizado")
+                return redirect('profile')
+        elif 'form-update-pass' in request.POST:
+            form_pass = CustomPasswordChangeForm(user=request.user, data=request.POST)
+            if form.is_valid():
+                form.save()
+                update_session_auth_hash(request, form.user)
+                messages.success(request, '¡Tu contraseña ha sido actualizada con éxito!')
+                return redirect('profile')
+        elif 'form-stress-share' in request.POST:
+            share_stress_level = request.POST.get('share_stress_level') == 'on'
+            user.share_stress_level = share_stress_level
+            user.save()
+            messages.success(request, "Se ha actualizado el estado de compartir tu nivel de estres")
+            return redirect('profile')
 
     context = {
         'form': form,
+        'form_pass': form_pass,
+        'share_stress': user.share_stress_level,
         'role': user.role,
     }
 

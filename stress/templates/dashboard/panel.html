@@ -7,7 +7,7 @@
 {% include "elements/messages.html" %}
 
 <main class="main p-4">
-    <div class="container {{ color }} p-4 rounded-4 my-4">
+    <div class="{{ color }} p-4 rounded-4 my-4">
         <div class="row">
             <div class="col-9">
                 <h1>Hola, {{ name }}</h1>
@@ -21,7 +21,7 @@
         </div>
     </div>
 
-    <div class="container mb-4">
+    <div class="mb-4">
         <label class="text-grisillo fw-bold my-2">Tarea</label>
         {% if not task %}
             <div class="bg-inf p-3 rounded-2 text-gris">
@@ -43,7 +43,7 @@
         {% endif %}
     </div>
 
-    <div class="container mb-4">
+    <div class="mb-4">
         <label class="text-grisillo fw-bold my-2">Test</label>
         {% if not test %}
             <div class="bg-inf p-3 rounded-2 text-gris">
