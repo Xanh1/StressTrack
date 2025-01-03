@@ -9,12 +9,12 @@
 <main class="main p-4">
     <div class="my-4">
         <div class="row">
-            <div class="col-10 p-0">
+            <div class="col-11 p-0">
                 <h1 class="m-0">Tareas</h1>
             </div>
             {% if role == 'teacher' %}
                 {% if course %}
-                    <div class="col-2 d-flex flex-column justify-content-center">
+                    <div class="col-1 d-flex flex-column justify-content-center">
                         <button 
                             class="fs-7 text-center rounded-4 bg-white border border-dark border-2 text-dark text-decoration-none py-1 px-2" 
                             data-bs-toggle="modal" 
@@ -127,7 +127,7 @@
                         <label for="due_date" class="d-block pb-1 fs-7 fw-bold">Fecha de entrega</label>
                         <input type="date" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="due_date_update" name="due_date">
                     </div>
-                    <button type="submit" name="form-update" value="form-update" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Editar</button>
+                    <button type="submit" name="form-update" value="form-update" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Actualizar</button>
                 </form>
             </div>
         </div>
@@ -150,6 +150,18 @@
             document.getElementById('due_date_update').value = formattedDate;
         });
     });
+
+    document.getElementById('taskFormUpdate').addEventListener('submit', function(event) {
+        var taskId = document.getElementById('taskFormUpdate').getAttribute('data-task-id');
+        
+        var hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'task_id';
+        hiddenInput.value = taskId;
+        
+        this.appendChild(hiddenInput);
+    });
+
 });
 
 </script>

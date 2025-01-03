@@ -1,62 +1,316 @@
-{% extends "base/dashboard_base.html" %}
+{% extends "base/dashboard_base.html" %} 
 
-{% block content %}
+{% block content %} 
 
-{% include "elements/dashboard_sidebar.html" with role=role %}
+{% include "elements/dashboard_sidebar.html" with role=role %} 
+
+{% include "elements/messages.html" %}
 
 <main class="main p-4">
-    <div class="my-4">
-        <div class="row">
-            <div class="col-10 p-0">
-                <h1 class="m-0">Curso</h1>
-            </div>
-            {% if role == 'teacher' %}
-                <div class="col-2 d-flex flex-column justify-content-center">
-                    <a class="fs-7 text-center rounded-4 border border-dark border-2 text-dark text-decoration-none py-1 px-2" href="{% url 'create-task' %}"><i class="fa-solid fa-plus fs-8"></i> Crear grupos</a>
-                </div>
-            {% endif %}
+  <div class="my-4">
+    <div class="row">
+      <div class="col-11 p-0">
+        <h1 class="m-0">Curso</h1>
+      </div>
+      {% if role == 'teacher' %}
+        <div class="col-1 d-flex flex-column justify-content-center">
+            <button
+            class="fs-7 text-center rounded-4 bg-white border border-dark border-2 text-dark text-decoration-none py-1 px-2"
+            data-bs-toggle="modal"
+            data-bs-target="#addGroupModal"
+            >
+            <i class="fa-solid fa-plus fs-8"></i> Grupo
+            </button>
         </div>
-        <label class="text-grisillo fw-bold my-2">Estudiantes</label>
-        {% if not students %}
-            {% if role == 'student' %}
-                <div class="bg-inf p-3 rounded-2 text-gris">
-                    <i class="fas fa-info-circle"></i> No estas matriculado a un curso por el momento.
-                </div>
-            {% else %}
-                <div class="bg-inf p-3 rounded-2 text-gris">
-                    <i class="fas fa-info-circle"></i> No estas asignado a un curso por el momento.
-                </div>
-            {% endif %}
+      {% endif %}
+    </div>
+    <label class="text-grisillo fw-bold my-2">Estudiantes</label>
+    {% if not students %} 
+        {% if role == 'student' %}
+            <div class="bg-inf p-3 rounded-2 text-gris">
+            <i class="fas fa-info-circle"></i> No estas matriculado a un curso por el
+            momento.
+            </div>
         {% else %}
-            {% for student in students %}
-                <div class="p-3 my-2 rounded-2 text-gris border border-1">
-                    <div class="row">
-                        <div class="col-5">
-                            <i class="fa-solid fa-user me-3"></i>{{ student.first_name }} {{ student.last_name }}
-                        </div>
-                        <div class="col-5">
-                            {{ student.group }}
-                        </div>
+            <div class="bg-inf p-3 rounded-2 text-gris">
+            <i class="fas fa-info-circle"></i> No estas asignado a un curso por el
+            momento.
+            </div>
+        {% endif %}
+    {% else %} 
+        {% for student in students %}
+            <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                <div class="row">
+                    <div class="col-5">
+                        <i class="fa-solid fa-user me-3"></i>{{ student.first_name }} {{ student.last_name }}
+                    </div>
+                    <div class="col-5">
+                        {% if student.group %} 
+                            {{ student.group }} 
+                        {% else %} 
+                            N/A 
+                        {% endif %}
+                        {% if role == 'teacher' %}
+                            <button 
+                                data-bs-toggle="modal"
+                                data-bs-target="#putTeamUser"
+                                class="mx-2 bg-white border-0 text-gris put-team"
+                                data-user='{"id": "{{ student.id }}"}' 
+                                title="Agregar a un grupo">
+                                <i class="fa-solid fa-gears"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                    {% if role == 'student' %} 
+                        {% if student.share_stress_level %}
+                            <div class="col-2 text-center">
+                                <div
+                                    class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7"
+                                >
+                                    Nivel de Estres: {{ student.stress }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
                         <div class="col-2 text-center">
-                            <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
-                                Estres: {{ student.stress }}
+                            <div
+                                class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7"
+                            >
+                                Nivel de Estres: {{ student.stress }}
                             </div>
                         </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        {% if teacher %}
+            <label class="text-grisillo fw-bold my-2">Profesor</label>
+            <div class="p-3 my-2 rounded-2 text-gris border border-1">
+            <div class="row">
+                <div class="col-12">
+                <i class="fa-solid fa-user-tie me-3"></i> {{ teacher.first_name }} {{ teacher.last_name }}
+                </div>
+            </div>
+            </div>
+        {% endif %}
+    {% endif %}
+  </div>
+</main>
+
+<div
+  class="modal fade"
+  id="addGroupModal"
+  tabindex="-1"
+  aria-labelledby="addGroupLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="addGroupLabel">Crear Grupo</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="form-add-group" method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="title" class="d-block pb-1 fs-7 fw-bold">Nombre</label>
+            <input
+              type="text"
+              class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2"
+              id="name"
+              name="name"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            name="form-add-group"
+            value="form-add-group"
+            class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3"
+          >
+            Agregar
+          </button>
+        </form>
+      </div>
+      <div class="modal-body">
+        {% if groups %} 
+            {% for group in groups %}
+                <div class="p-3 my-2 rounded-2 border text-title-gris border-1">
+                <div class="row">
+                    <div class="col-10">{{ group.name }}</div>
+                    <div class="col-2 text-center">
+                    <a
+                        href="#"
+                        class="mx-1 text-decoration-none text-not-bad edit-team"
+                        data-bs-toggle="modal"
+                        data-bs-target="#updateGroupModal"
+                        data-team='{"id": "{{ group.id }}", "name": "{{ group.name }}"}' 
+                        title="Editar"
+                    >
+                        <i class="fa-solid fa-pencil"></i>
+                    </a>
+                    <a
+                        href="{% url 'delete-team' group.id %}"
+                        class="mx-1 text-decoration-none text-dying"
+                        title="Eliminar"
+                    >
+                        <i class="fa-solid fa-trash-can"></i>
+                    </a>
                     </div>
+                </div>
                 </div>
             {% endfor %}
-            {% if teacher %}
-                <label class="text-grisillo fw-bold my-2">Profesor</label>
-                <div class="p-3 my-2 rounded-2 text-gris border border-1">
-                    <div class="row">
-                        <div class="col-12">
-                            <i class="fa-solid fa-user-tie me-3"></i> {{ teacher.first_name }} {{ teacher.last_name }}
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
         {% endif %}
+      </div>
     </div>
-</main>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="updateGroupModal"
+  tabindex="-1"
+  aria-labelledby="updateGroupLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="updateGroupLabel">Crear Grupo</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="groupFormUpdate" method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="title" class="d-block pb-1 fs-7 fw-bold">Nombre</label
+            ><input
+              type="text"
+              class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2"
+              id="name_update"
+              name="name_update"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            name="form-update-group"
+            id="form-update-group"
+            value="form-update-group"
+            class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3"
+          >
+            Actualizar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="putTeamUser"
+  tabindex="-1"
+  aria-labelledby="updateGroupLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold" id="updateGroupLabel">Grupos</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="putTeamUserForm" method="post">
+            {% csrf_token %}
+            {% if groups %}
+                <label for="groupSelect" class="d-block pb-1 fs-7 fw-bold">Seleccionar Grupo</label>
+                <select id="groupSelect" name="group" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2 bg-white mb-4">
+                    {% for group in groups %}
+                        <option value="{{ group.id }}">{{ group.name }}</option>
+                    {% endfor %}
+                </select>
+            {% else %}
+                <p>No hay grupos disponibles.</p>
+            {% endif %}
+          <button
+            type="submit"
+            name="form-put-group"
+            id="form-put-group"
+            value="form-put-group"
+            class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3"
+          >
+            Seleccionar
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.edit-team').forEach(button => {
+            button.addEventListener('click', function () {
+                
+                const teamData = JSON.parse(this.getAttribute('data-team'));
+
+                document.getElementById('groupFormUpdate').setAttribute('team-id', teamData.id);
+                document.getElementById('name_update').value = teamData.name;
+            });
+        });
+    });
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.put-team').forEach(button => {
+            button.addEventListener('click', function () {
+                console.log("llego aca pss")
+                const userData = JSON.parse(this.getAttribute('data-user'));
+
+                document.getElementById('putTeamUserForm').setAttribute('user-id', userData.id);
+            });
+        });
+    });
+
+    document.getElementById('putTeamUserForm').addEventListener('submit', function(event) {
+        var userId = document.getElementById('putTeamUserForm').getAttribute('user-id');
+        
+        var hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'user_id';
+        hiddenInput.value = userId;
+        
+        this.appendChild(hiddenInput);
+    });
+
+
+    document.getElementById('groupFormUpdate').addEventListener('submit', function(event) {
+        var taskId = document.getElementById('groupFormUpdate').getAttribute('team-id');
+        
+        var hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'task_id';
+        hiddenInput.value = taskId;
+        
+        this.appendChild(hiddenInput);
+    });
+
+</script>
 
 {% endblock %}

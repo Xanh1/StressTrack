@@ -7,7 +7,7 @@
 {% include "elements/messages.html" %}
 
 <main class="main p-4">
-    <div class="row">
+    <div class="row mt-4">
         <div class="col-12 p-0">
             <h1 class="m-0">Configuración</h1>
         </div>
@@ -116,20 +116,22 @@
             </form>
         </div>
     </div>
-    <div>
-        <label class="text-grisillo fw-bold mt-4 mb-2">Estres</label>
-        <form method="post" class="p-2">
-            {% csrf_token %}
-            <label class="d-block mb-3">
-                <input type="checkbox" name="share_stress_level" {% if share_stress %}checked{% endif %}>
-                Compartir nivel de estrés
-            </label>
-            <div class="d-flex justify-content-start">
-                <button class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3"
-                    type="submit" name="form-stress-share" value="form-stress-share">Guardar</button>
-            </div>
-        </form>
-    </div>
+    {% if role == 'student' %}
+        <div>
+            <label class="text-grisillo fw-bold mt-4 mb-2">Estres</label>
+            <form method="post" class="p-2">
+                {% csrf_token %}
+                <label class="d-block mb-3">
+                    <input type="checkbox" name="share_stress_level" {% if share_stress %}checked{% endif %}>
+                    Compartir nivel de estrés
+                </label>
+                <div class="d-flex justify-content-start">
+                    <button class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3"
+                        type="submit" name="form-stress-share" value="form-stress-share">Guardar</button>
+                </div>
+            </form>
+        </div>
+    {% endif %}
 </main>
 
 {% endblock %}

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserUpdateForm, CustomPasswordChangeForm
-from .models import Test, Option, Answer, Task
+from .models import Test, Option, Answer, Task, Team, CustomUser
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
 from datetime import date
@@ -116,13 +116,13 @@ def list_tasks(request):
         course = user.teaching_courses.first()
 
         if 'form-update' in request.POST:
-            task = get_object_or_404(Task, title=title, course=course)
+            task_id = request.POST.get('task_id')
+            task = get_object_or_404(Task, id=task_id, course=course)
             
             task.title = title
             task.due_date = due_date
             task.save()
             messages.success(request, "La tarea se ha actualizado satisfactoriamente")
-
             return redirect('list-tasks')
         else:
             response = create_task(title, due_date, course)
@@ -179,20 +179,49 @@ def list_tests(request):
 
 @login_required
 def course(request):
-
-    course = request.user.course
+    user = request.user
+    course = user.course if user.role == 'student' else user.teaching_courses.first()
+    
+    if request.method == 'POST':
+        if 'form-add-group' in request.POST:
+            name = request.POST.get('name')
+            Team.objects.create(name=name, course=course)
+            messages.success(request, 'Se ha creado el grupo')
+            return redirect('course')
+        elif 'form-update-group' in request.POST:
+            id_team = request.POST.get('task_id')
+            team = get_object_or_404(Team, id=id_team)
+            team.name = request.POST.get('name_update')
+            team.save()
+            messages.success(request, "El grupo se ha actualizado satisfactoriamente")
+            return redirect('course')
+        elif 'form-put-group' in request.POST:
+            id_student = request.POST.get('user_id')
+            print(id_student)
+            student = get_object_or_404(CustomUser, id=id_student)
+            team = request.POST.get('group')
+            
+            group = Team.objects.get(id=team)
+            
+            student.group = group
+            student.save()
+            messages.success(request, "Se ha agregado a un grupo")
+            return redirect('course')
 
     if course:
         students = course.students.all()
         teacher = course.teacher
+        groups = course.teams.all()
     else:
         students = None
         teacher = None
+        groups = None
 
     context = {
         'students': students,
         'role': request.user.role,
-        'teacher': teacher
+        'groups': groups,
+        'teacher': teacher,
     }
 
     return render(request, 'dashboard/course.html', context)
@@ -289,3 +318,13 @@ def delete_task(request, task_id):
     task.delete()
     messages.success(request, 'La tarea se ha eliminado correctamente')
     return redirect('list-tasks')
+
+@login_required
+def delete_team(request, team_id):
+
+    user = request.user
+    task = get_object_or_404(Team, id=team_id)
+    task.delete()
+    
+    messages.success(request, 'El grupo se ha eliminado correctamente')
+    return redirect('course')

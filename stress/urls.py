@@ -21,4 +21,7 @@ urlpatterns = [
     # task
     path('tasks/update/<int:task_id>/', views.list_tasks, name='update-task'),
     path('tasks/delete/<int:task_id>/', views.delete_task, name='delete-task'),
+    
+    # teams
+    path('course/team/delete/<int:team_id>/', views.delete_team, name='delete-team'),
 ]

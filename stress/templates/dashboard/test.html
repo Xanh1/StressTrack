@@ -9,11 +9,11 @@
 <main class="main p-4">
     <div class="my-4">
         <div class="row">
-            <div class="col-10 p-0">
+            <div class="col-11 p-0">
                 <h1 class="m-0">Tests</h1>
             </div>
             {% if role == 'teacher' %}
-                <div class="col-2 d-flex flex-column justify-content-center">
+                <div class="col-1 d-flex flex-column justify-content-center">
                     <a class="fs-7 text-center rounded-4 border border-dark border-2 text-dark text-decoration-none py-1 px-2" href=""><i class="fa-solid fa-plus fs-8"></i> Nuevo</a>
                 </div>
             {% endif %}
@@ -25,7 +25,7 @@
             </div>
         {% else %}
             {% for test in tests %}
-                <div class="p-3 rounded-2 text-gris border border-1">
+                <div class="p-3 my-2 rounded-2 text-gris border border-1">
                     <div class="row">
                         {% if role == 'student' %}
                             <div class="col-10">
