@@ -45,8 +45,6 @@ Este es un proyecto para gestionar y realizar tests de estrés en estudiantes.
 - [ ] **Modificar recomendacio**: (profesores, administradores)
 - [ ] **Eliminar recomendacion**: (profesores, administradores)
 
----
-
 ## Instalación
 
 ### 1. Clonar el repositorio
