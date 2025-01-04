@@ -24,4 +24,9 @@ urlpatterns = [
     
     # teams
     path('course/team/delete/<int:team_id>/', views.delete_team, name='delete-team'),
+    
+    
+    # pruebas
+    path('prueba/', views.prueba, name='prueba'),
+    
 ]

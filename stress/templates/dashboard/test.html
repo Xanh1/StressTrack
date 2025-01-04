@@ -1,10 +1,13 @@
 {% extends "base/dashboard_base.html" %}
 
+{% load task_tag %}
+
 {% block content %}
 
 {% include "elements/dashboard_sidebar.html" with role=role %}
 
 {% include "elements/messages.html" %}
+
 
 <main class="main p-4 pe-5">
     <div class="my-4">
@@ -58,8 +61,20 @@
                 {% for test in teacher_tests %}
                     <div class="p-3 my-2 rounded-2 text-gris border border-1">
                         <div class="row">
-                            <div class="col-11">
+                            <div class="col-6">
                                 <i class="fa-solid fa-list me-3"></i>{{ test.title }}
+                            </div>
+                            <div class="col-5">
+                                <a href="#" 
+                                    class="mx-1 text-decoration-none text-gris assign-test" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#assignTestModal{{ test.id }}"
+                                    title="Asignar test"
+                                    data-test='{"id": "{{ test.id }}"}' 
+                                >
+                                    <i class="fa-solid fa-users"></i>
+                                    Asignar test
+                                </a>
                             </div>
                             <div class="col-1 text-center">
                                 <a href="" class="mx-1 text-decoration-none text-not-bad" title="Editar">
@@ -68,6 +83,52 @@
                                 <a href="" class="mx-1 text-decoration-none text-dying" title="Eliminar">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="assignTestModal{{ test.id }}" tabindex="-1" aria-labelledby="assignTestModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title fw-bold" id="assignTestModalLabel">Asignar Test</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
+                                        <i class="fas fa-info-circle"></i> Selecciona los grupos a los que deseas asignar este test.
+                                    </p>
+                                    <form method="post" id="assignTestForm" class="p-2">
+                                        {% csrf_token %}
+                                        <h5 class="fs-6 mb-3">Lista de grupos</h5>
+                                        {% for group in groups %}
+                                            {% is_group_assigned_to_test test group as is_assigned %}
+                                            <div class="form-check">
+                                                <input 
+                                                    class="form-check-input" 
+                                                    type="checkbox" 
+                                                    name="groups[]" 
+                                                    value="{{ group.id }}" 
+                                                    id="group{{ group.id }}"
+
+                                                    {% if is_assigned %}
+                                                        checked
+                                                    {% endif %}
+                                                >
+                                                <label class="fs-7" for="group{{ group.id }}">
+                                                    {{ group.name }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                        <button type="submit" 
+                                                class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
+                                                name="assign-test-form"
+                                                id="assign-test-form"
+                                                value="assign-test-form"
+                                        >
+                                            Asignar
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -83,53 +144,76 @@
 </main>
 
 
+{% if role == 'teacher' %}
 
-<div class="modal fade" id="addTestModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title fw-bold" id="addTaskModalLabel">Crear Test</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="taskForm" method="post" >
-                    {% csrf_token %}
-                    <div class="mb-4">
-                        <label for="title" class="d-block pb-1 fs-6 fw-bold">Título</label>
-                        <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="title" name="title" required>
-                    </div>
-                    <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
-                        <i class="fas fa-info-circle"></i> <strong>Nota:</strong> Todas las preguntas tendrán las mismas opciones de respuesta: <strong>Siempre, Casi siempre, A veces, Rara vez, Nunca</strong>.
-                    </p>
-                    <div class="mb-2">
-                        <div class="row">
-                            <div class="col-11">
-                                <label class="pb-1 fs-6 fw-bold">Preguntas</label>
-                            </div>
-                            <div class="col-1 d-flex justify-content-center">
-                                <button
-                                    id="btn-add-quest"
-                                    title="Agregar pregunta"
-                                    class="fs-7 bg-white text-center text-dark border-0 text-decoration-none">
-                                    <i class="fa-solid fa-plus-circle"></i>
-                                </button>
+    <div class="modal fade" id="addTestModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="addTaskModalLabel">Crear Test</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="taskForm" method="post" >
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="title" class="d-block pb-1 fs-6 fw-bold">Título</label>
+                            <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="title" name="title" required>
+                        </div>
+                        <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
+                            <i class="fas fa-info-circle"></i> <strong>Nota:</strong> Todas las preguntas tendrán las mismas opciones de respuesta: <strong>Siempre, Casi siempre, A veces, Rara vez, Nunca</strong>.
+                        </p>
+                        <div class="mb-2">
+                            <div class="row">
+                                <div class="col-11">
+                                    <label class="pb-1 fs-6 fw-bold">Preguntas</label>
+                                </div>
+                                <div class="col-1 d-flex justify-content-center">
+                                    <button
+                                        id="btn-add-quest"
+                                        title="Agregar pregunta"
+                                        class="fs-7 bg-white text-center text-dark border-0 text-decoration-none">
+                                        <i class="fa-solid fa-plus-circle"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
 
-                    <div class="mb-4 container-quests">
-                        
-                    </div>
+                        <div class="mb-4 container-quests">
+                            
+                        </div>
 
-                    <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Crear</button>
-                </form>
+                        <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Crear</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+{% endif %}
 
 <script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.assign-test').forEach(button => {
+            button.addEventListener('click', function () {
+                const testData = JSON.parse(this.getAttribute('data-test'));
+                document.getElementById('assignTestForm').setAttribute('test-id', testData.id);
+            });
+        });
+    });
+
+    document.getElementById('assignTestForm').addEventListener('submit', function(event) {
+        var testID = document.getElementById('assignTestForm').getAttribute('test-id');
+        
+        var hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'test_id';
+        hiddenInput.value = testID;
+        
+        this.appendChild(hiddenInput);
+    });
     
     document.getElementById('btn-add-quest').addEventListener('click', function (e) {
         e.preventDefault();

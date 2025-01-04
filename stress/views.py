@@ -155,18 +155,30 @@ def list_tests(request):
     team = user.group
 
     if request.method == 'POST':
-        test_name = request.POST.get('title')
-        course = user.teaching_courses.first()
-        test = Test.objects.create(title=test_name, course=course)
+        if 'assign-test-form' in request.POST:
+            test_id = request.POST.get('test_id')
+            teams_id = request.POST.getlist('groups[]')
+            
+            test = get_object_or_404(Test, id=test_id)
+            teams = Team.objects.filter(id__in=teams_id)
+            
+            test.Team.set(teams)
+            test.save()
+            messages.success(request, "Se ha asignado el test correctamente")
+            return redirect('list-test')            
+        else:
+            test_name = request.POST.get('title')
+            course = user.teaching_courses.first()
+            test = Test.objects.create(title=test_name, course=course)
 
-        questions = request.POST.getlist('questions[]')
+            questions = request.POST.getlist('questions[]')
 
-        for question_text in questions:
-            if question_text.strip():
-                Question.objects.create(description=question_text, test=test)
-        
-        messages.success(request, 'Se ha creado el test')
-        return redirect('list-test')
+            for question_text in questions:
+                if question_text.strip():
+                    Question.objects.create(description=question_text, test=test)
+            
+            messages.success(request, 'Se ha creado el test')
+            return redirect('list-test')
 
     if team:
         tests = team.tests.all()
@@ -186,13 +198,16 @@ def list_tests(request):
     
     if user.role == 'teacher':
         teacher_tests =  user.teaching_courses.first().tests.all()
+        groups = user.teaching_courses.first().teams.all()
     else:
         teacher_tests = None
+        groups = None
 
     context = {
         'tests': list_test,
         'role': user.role,
         'teacher_tests': teacher_tests,
+        'groups': groups,
     }
 
     return render(request, 'dashboard/test.html', context)
@@ -347,3 +362,8 @@ def delete_team(request, team_id):
     
     messages.success(request, 'El grupo se ha eliminado correctamente')
     return redirect('course')
+
+
+@login_required
+def prueba(request):
+    return render(request, 'aiuda.html')

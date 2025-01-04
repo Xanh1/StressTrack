@@ -88,6 +88,10 @@ body {
   background-color: rgb(248, 253, 255);
 }
 
+.text-inf {
+  color: rgba(114, 210, 255, 0.949);
+}
+
 .text-not-bad {
   color: #f8da95;
 }
