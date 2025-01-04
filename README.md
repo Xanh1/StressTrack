@@ -6,8 +6,6 @@ Este es un proyecto para gestionar y realizar tests de estrés en estudiantes.
 
 - Python 3.x
 
----
-
 ## Funcionalidades Implementadas
 
 ### Funcionalidades Completadas ✅
@@ -33,10 +31,10 @@ Este es un proyecto para gestionar y realizar tests de estrés en estudiantes.
 - [x] **Editar perfil de usuario** (estudiantes, profesores)
 
 ### Funcionalidades en Desarrollo 🚀
-- [ ] **Modificar test**: (profesores)
-- [ ] **Eliminar test**: (profesores)
-- [ ] **Notificaciones**: (estudiantes, profesores, administradores)
-- [ ] **Restableces contraseña olvidada**: (estudiante, profesores, administradores)
+- [-] **Modificar test**: (profesores)
+- [-] **Eliminar test**: (profesores)
+- [-] **Notificaciones**: (estudiantes, profesores, administradores)
+- [-] **Restableces contraseña olvidada**: (estudiante, profesores, administradores)
 
 ### Funcionalidades Pendientes ⏳
 - [ ] **Registro de usuario**: (profesores, administradores)
