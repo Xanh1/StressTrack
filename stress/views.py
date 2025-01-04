@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserUpdateForm, CustomPasswordChangeForm
-from .models import Test, Option, Answer, Task, Team, CustomUser
+from .models import Test, Option, Answer, Task, Team, CustomUser, Question
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
 from datetime import date
@@ -154,6 +154,20 @@ def list_tests(request):
 
     team = user.group
 
+    if request.method == 'POST':
+        test_name = request.POST.get('title')
+        course = user.teaching_courses.first()
+        test = Test.objects.create(title=test_name, course=course)
+
+        questions = request.POST.getlist('questions[]')
+
+        for question_text in questions:
+            if question_text.strip():
+                Question.objects.create(description=question_text, test=test)
+        
+        messages.success(request, 'Se ha creado el test')
+        return redirect('list-test')
+
     if team:
         tests = team.tests.all()
     else:
@@ -169,10 +183,16 @@ def list_tests(request):
                 'title': test.title,
                 'state': answered
             })
+    
+    if user.role == 'teacher':
+        teacher_tests =  user.teaching_courses.first().tests.all()
+    else:
+        teacher_tests = None
 
     context = {
         'tests': list_test,
         'role': user.role,
+        'teacher_tests': teacher_tests,
     }
 
     return render(request, 'dashboard/test.html', context)
@@ -226,7 +246,6 @@ def course(request):
 
     return render(request, 'dashboard/course.html', context)
 
-# I need change this and create a new form, couse I need to add an attribute to share the stress level.
 @login_required
 def profile(request):
 

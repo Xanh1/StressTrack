@@ -73,6 +73,7 @@ class Task(models.Model):
 class Test(models.Model):
     title = models.CharField(max_length=255)
     Team = models.ManyToManyField(Team, related_name='tests')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='tests', default='2')
 
     def __str__(self):
         return f"{self.title}"

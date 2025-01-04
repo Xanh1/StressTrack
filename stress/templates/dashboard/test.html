@@ -6,7 +6,7 @@
 
 {% include "elements/messages.html" %}
 
-<main class="main p-4">
+<main class="main p-4 pe-5">
     <div class="my-4">
         <div class="row">
             <div class="col-11 p-0">
@@ -14,20 +14,26 @@
             </div>
             {% if role == 'teacher' %}
                 <div class="col-1 d-flex flex-column justify-content-center">
-                    <a class="fs-7 text-center rounded-4 border border-dark border-2 text-dark text-decoration-none py-1 px-2" href=""><i class="fa-solid fa-plus fs-8"></i> Nuevo</a>
+                    <button 
+                        class="fs-7 bg-white text-center rounded-4 border border-dark border-2 text-dark text-decoration-none py-1 px-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addTestModal"
+                        >
+                        <i class="fa-solid fa-plus fs-8"></i> Nuevo
+                    </button>
                 </div>
             {% endif %}
         </div>
         <label class="text-grisillo fw-bold my-2">Lista</label>
-        {% if not tests %}
-            <div class="bg-inf p-3 rounded-2 text-gris">
-                <i class="fas fa-info-circle"></i> No tienes tests asignadas por el momento.
-            </div>
-        {% else %}
-            {% for test in tests %}
-                <div class="p-3 my-2 rounded-2 text-gris border border-1">
-                    <div class="row">
-                        {% if role == 'student' %}
+        {% if role == 'student' %}
+            {% if not tests %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No tienes tests asignadas por el momento.
+                </div>
+            {% else %}
+                {% for test in tests %}
+                    <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                        <div class="row">
                             <div class="col-10">
                                 <i class="fa-solid fa-list me-3"></i>{{ test.title }}
                             </div>
@@ -42,7 +48,16 @@
                                     </div>
                                 {% endif %}
                             </div>
-                        {% else %}
+                        </div>
+                    </div>
+                {% endfor %}    
+            {% endif %}
+        {% endif %}
+        {% if role == 'teacher' %}
+            {% if teacher_tests %}
+                {% for test in teacher_tests %}
+                    <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                        <div class="row">
                             <div class="col-11">
                                 <i class="fa-solid fa-list me-3"></i>{{ test.title }}
                             </div>
@@ -54,12 +69,100 @@
                                     <i class="fa-solid fa-trash-can"></i>
                                 </a>
                             </div>
-                        {% endif %}
+                        </div>
                     </div>
+                {% endfor %}
+            {% else %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No existen tests por el momento.
                 </div>
-            {% endfor %}    
+            {% endif %}
+                    
         {% endif %}
     </div>
 </main>
+
+
+
+<div class="modal fade" id="addTestModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="addTaskModalLabel">Crear Test</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm" method="post" >
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="title" class="d-block pb-1 fs-6 fw-bold">Título</label>
+                        <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="title" name="title" required>
+                    </div>
+                    <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
+                        <i class="fas fa-info-circle"></i> <strong>Nota:</strong> Todas las preguntas tendrán las mismas opciones de respuesta: <strong>Siempre, Casi siempre, A veces, Rara vez, Nunca</strong>.
+                    </p>
+                    <div class="mb-2">
+                        <div class="row">
+                            <div class="col-11">
+                                <label class="pb-1 fs-6 fw-bold">Preguntas</label>
+                            </div>
+                            <div class="col-1 d-flex justify-content-center">
+                                <button
+                                    id="btn-add-quest"
+                                    title="Agregar pregunta"
+                                    class="fs-7 bg-white text-center text-dark border-0 text-decoration-none">
+                                    <i class="fa-solid fa-plus-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="mb-4 container-quests">
+                        
+                    </div>
+
+                    <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Crear</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    document.getElementById('btn-add-quest').addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const questContainer = document.createElement('div');
+        questContainer.classList.add('row', 'mb-3');
+
+        const colInput = document.createElement('div');
+        colInput.classList.add('col-11');
+        const inputQuestion = document.createElement('input');
+        inputQuestion.type = 'text';
+        inputQuestion.classList.add('w-100', 'fs-7', 'py-1', 'px-2', 'border', 'border-1', 'border-dark', 'rounded-2');
+        inputQuestion.name = 'questions[]';
+        colInput.appendChild(inputQuestion);
+
+        const colButton = document.createElement('div');
+        colButton.classList.add('col-1', 'text-center', 'd-flex', 'justify-content-center', 'p-0');
+        const btnDelete = document.createElement('button');
+        btnDelete.type = 'button';
+        btnDelete.classList.add('fs-7', 'bg-white', 'border-0', 'm-0', 'p-0');
+        btnDelete.innerHTML = '<i class="fa-solid fa-minus-circle"></i>';
+
+        btnDelete.addEventListener('click', function() {
+            questContainer.remove();
+        });
+
+        colButton.appendChild(btnDelete);
+
+        questContainer.appendChild(colInput);
+        questContainer.appendChild(colButton);
+
+        document.querySelector('.container-quests').appendChild(questContainer);
+    });
+</script>
 
 {% endblock %}
