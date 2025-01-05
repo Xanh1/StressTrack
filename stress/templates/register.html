@@ -8,7 +8,7 @@
         {% csrf_token %}
         <div class="row mb-3">
             <div class="col-6">
-                <label class="d-block pb-1 fs-7 fw-bold" for="">Nombre</label>
+                <label class="d-block pb-1 fs-7 fw-semibold" for="">Nombre</label>
                 {{ form.first_name }}
                 <div>
                     {% for error in form.first_name.errors %}
@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="col-6">
-                <label class="d-block pb-1 fs-7 fw-bold" for="">Apellido</label>
+                <label class="d-block pb-1 fs-7 fw-semibold" for="">Apellido</label>
                 {{ form.last_name }}
                 <div>
                     {% for error in form.last_name.errors %}
@@ -28,7 +28,7 @@
         </div>
 
         <div class="mb-3">
-            <label class="d-block pb-1 fs-7 fw-bold" for="">Dni</label>
+            <label class="d-block pb-1 fs-7 fw-semibold" for="">Dni</label>
             {{ form.dni }}
             <div>
                 {% for error in form.dni.errors %}
@@ -38,7 +38,7 @@
         </div>
 
         <div class="mb-3">
-            <label class="d-block pb-1 fs-7 fw-bold" for="">Correo Electrónico</label>
+            <label class="d-block pb-1 fs-7 fw-semibold" for="">Correo Electrónico</label>
             {{ form.email }}
             <div>
                 {% for error in form.email.errors %}
@@ -49,7 +49,7 @@
 
         <div class="row mb-3">
             <div class="col-6">
-                <label class="d-block pb-1 fs-7 fw-bold" for="">Contraseña</label>
+                <label class="d-block pb-1 fs-7 fw-semibold" for="">Contraseña</label>
                 {{ form.password1 }}
                 <div>
                     {% for error in form.password1.errors %}
@@ -58,7 +58,7 @@
                 </div>
             </div>
             <div class="col-6">
-                <label class="d-block pb-1 fs-7 fw-bold" for="">Verificar Contraseña</label>
+                <label class="d-block pb-1 fs-7 fw-semibold" for="">Verificar Contraseña</label>
                 {{ form.password2 }}
                 <div>
                     {% for error in form.password2.errors %}

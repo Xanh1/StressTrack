@@ -1,5 +1,6 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetCompleteView, PasswordResetConfirmView
 
 urlpatterns = [
     # general
@@ -25,8 +26,12 @@ urlpatterns = [
     # teams
     path('course/team/delete/<int:team_id>/', views.delete_team, name='delete-team'),
     
+    # reset password
+    path('reset/password_reset', PasswordResetView.as_view(template_name='registration/password_reset_forms.html', email_template_name="registration/password_reset_emails.html"), name='password_reset'),
+    path('reset/password_reset_done', PasswordResetDoneView.as_view(template_name='registration/password_reset_dones.html'), name = 'password_reset_done'),
+    re_path(r'^reset/(?P<uidb64>[0-9A-za-z_\-]+)/(?P<token>.+)/$', PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirms.html'), name = 'password_reset_confirm'),
+    path('reset/done',PasswordResetCompleteView.as_view(template_name='registration/password_reset_completes.html') , name = 'password_reset_complete'),
     
     # pruebas
     path('prueba/', views.prueba, name='prueba'),
-    
 ]

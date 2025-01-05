@@ -40,7 +40,7 @@
                             <div class="col-10">
                                 <i class="fa-solid fa-list me-3"></i>{{ test.title }}
                             </div>
-                            <div class="col-2 text-center">
+                            <div class="col-2 text-end">
                                 {% if not test.state %}
                                     <div class="ms-4 p-1 d-inline rounded-4 fs-7">
                                         <a href="{% url 'test' test.test %}" class="text-decoration-none border border-dark text-dark py-1 px-3 rounded-3 fs-7">Realizar Test</a>

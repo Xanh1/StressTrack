@@ -3,21 +3,21 @@
 {% block content %}
 
 <main class="main container d-flex flex-column justify-content-center align-items-center">
-    <h1 class="p-0 m-0">Iniciar Sesión</h1>
+    <h1 class="p-0 my-4">Iniciar Sesión</h1>
     <form method="POST" class="w-25">
         {% csrf_token %}
         
-        <div class="my-4_5">
-            <label class="d-block pb-1 fs-7 fw-bold" for="user">Correo Electrónico</label>
+        <div class="my-4">
+            <label class="d-block pb-1 fs-7 fw-semibold" for="user">Correo Electrónico</label>
             {{ form.username }}
         </div>
 
         <div class="my-2">
-            <label class="d-block pb-1 fs-7 fw-bold" for="password">Contraseña</label>
+            <label class="d-block pb-1 fs-7 fw-semibold" for="password">Contraseña</label>
             {{ form.password }}
         </div>
         <div class="text-end mb-4 fs-8">
-            <a href="{% url 'home' %}">¿Olvidaste la contraseña?</a>
+            <a href="{% url 'password_reset' %}">¿Olvidaste la contraseña?</a>
         </div>
         
         <div class="d-flex justify-content-center">
