@@ -9,15 +9,24 @@
 <main class="main p-4 pe-5">
     <div class="{{ color }} p-4 rounded-4 my-4">
         <div class="row">
-            <div class="col-9">
-                <h1>Hola, {{ name }}</h1>
-                <p class="fs-6">Tus niveles de estrés son {{ stress }}. ¡Sigue así! Mantén tus buenos hábitos.
-                </p>
-            </div>
-            <div class="col-3 text-center">
-                <h1>{{ stress }}</h1>
-                <p>Nivel de Estrés</p>
-            </div>
+            {% if role == 'student' %}
+                <div class="col-10">
+                    <h1>Hola {{ name }}</h1>
+                    <p class="fs-6">Tus niveles de estrés son {{ stress }}. ¡Sigue así! Mantén tus buenos hábitos.
+                    </p>
+                </div>
+                <div class="col-2 text-center">
+                    <h1>{{ stress }}</h1>
+                    <p>Nivel de Estrés</p>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <h1>Hola {{ name }}</h1>
+                    <p class="fs-6 text-gris">
+                        ¡Que tengas un excelente día!
+                    </p>
+                </div>
+            {% endif %}
         </div>
     </div>
 
@@ -33,7 +42,7 @@
                     <div class="col-10">
                         <i class="fa-solid fa-list me-3"></i>{{ task.title }}
                     </div>
-                    <div class="col-2 text-center">
+                    <div class="col-2 text-end">
                         <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
                             {{ task.date }}
                         </div>
@@ -55,7 +64,7 @@
                     <div class="col-10">
                         <i class="fa-solid fa-list me-3"></i>{{ test.title }}
                     </div>
-                    <div class="col-2 text-center">
+                    <div class="col-2 text-end">
                         {% if not test.state %}
                             <div class="ms-4 p-1 d-inline rounded-4 fs-7">
                                 <a href="{% url 'test' test.id %}" class="text-decoration-none border border-dark text-dark py-1 px-3 rounded-3 fs-7">Realizar Test</a>

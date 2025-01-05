@@ -24,20 +24,25 @@
         </div>
       {% endif %}
     </div>
-    <label class="text-grisillo fw-bold my-2">Estudiantes</label>
-    {% if not students %} 
-        {% if role == 'student' %}
-            <div class="bg-inf p-3 rounded-2 text-gris">
-            <i class="fas fa-info-circle"></i> No estas matriculado a un curso por el
-            momento.
-            </div>
-        {% else %}
-            <div class="bg-inf p-3 rounded-2 text-gris">
-            <i class="fas fa-info-circle"></i> No estas asignado a un curso por el
-            momento.
-            </div>
-        {% endif %}
-    {% else %} 
+    {% if not course %}
+      {% if role == 'student' %}
+        <div class="bg-inf p-3 rounded-2 text-gris my-4">
+        <i class="fas fa-info-circle"></i> No estas matriculado a un curso por el
+        momento.
+        </div>
+      {% else %}
+        <div class="bg-inf p-3 rounded-2 text-gris my-4">
+        <i class="fas fa-info-circle"></i> No estas asignado a un curso por el
+        momento.
+        </div>
+      {% endif %}
+    {% else %}
+      <label class="text-grisillo fw-bold my-2">Estudiantes</label>
+      {% if not students %} 
+        <div class="bg-inf p-3 rounded-2 text-gris">
+          <i class="fas fa-info-circle"></i> No hay estudiantes matriculados por el momento.
+        </div>
+      {% else %}
         {% for student in students %}
             <div class="p-3 my-2 rounded-2 text-gris border border-1">
                 <div class="row">
@@ -83,20 +88,28 @@
                 </div>
             </div>
         {% endfor %}
-        {% if teacher %}
-            <label class="text-grisillo fw-bold my-2">Profesor</label>
+      {% endif %}
+      
+      <label class="text-grisillo fw-bold my-2">Profesor</label>
+      {% if teacher %}
             <div class="p-3 my-2 rounded-2 text-gris border border-1">
-            <div class="row">
+              <div class="row">
                 <div class="col-12">
                 <i class="fa-solid fa-user-tie me-3"></i> {{ teacher.first_name }} {{ teacher.last_name }}
                 </div>
+              </div>
             </div>
-            </div>
-        {% endif %}
+      {% else %}
+          <div class="bg-inf p-3 rounded-2 text-gris">
+            <i class="fas fa-info-circle"></i> No hay un profesor asignado por el momento.
+          </div>
+      {% endif %}
     {% endif %}
   </div>
 </main>
 
+
+{% if role == 'teacher' %}
 <div
   class="modal fade"
   id="addGroupModal"
@@ -115,59 +128,68 @@
           aria-label="Close"
         ></button>
       </div>
-      <div class="modal-body">
-        <form id="form-add-group" method="post">
-          {% csrf_token %}
-          <div class="mb-3">
-            <label for="title" class="d-block pb-1 fs-7 fw-bold">Nombre</label>
-            <input
-              type="text"
-              class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2"
-              id="name"
-              name="name"
-              required
-            />
-          </div>
-          <button
-            type="submit"
-            name="form-add-group"
-            value="form-add-group"
-            class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3"
-          >
-            Agregar
-          </button>
-        </form>
-      </div>
-      <div class="modal-body">
-        {% if groups %} 
-            {% for group in groups %}
-                <div class="p-3 my-2 rounded-2 border text-title-gris border-1">
-                <div class="row">
-                    <div class="col-10">{{ group.name }}</div>
-                    <div class="col-2 text-center">
-                    <a
-                        href="#"
-                        class="mx-1 text-decoration-none text-not-bad edit-team"
-                        data-bs-toggle="modal"
-                        data-bs-target="#updateGroupModal"
-                        data-team='{"id": "{{ group.id }}", "name": "{{ group.name }}"}' 
-                        title="Editar"
-                    >
-                        <i class="fa-solid fa-pencil"></i>
-                    </a>
-                    <a
-                        href="{% url 'delete-team' group.id %}"
-                        class="mx-1 text-decoration-none text-dying"
-                        title="Eliminar"
-                    >
-                        <i class="fa-solid fa-trash-can"></i>
-                    </a>
-                    </div>
-                </div>
-                </div>
-            {% endfor %}
-        {% endif %}
-      </div>
+      {% if teacher %}
+        <div class="modal-body">
+          <form id="form-add-group" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+              <label for="title" class="d-block pb-1 fs-7 fw-bold">Nombre</label>
+              <input
+                type="text"
+                class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2"
+                id="name"
+                name="name"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              name="form-add-group"
+              value="form-add-group"
+              class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3"
+            >
+              Agregar
+            </button>
+          </form>
+        </div>
+        <div class="modal-body">
+          {% if groups %} 
+              {% for group in groups %}
+                  <div class="p-3 my-2 rounded-2 border text-title-gris border-1">
+                  <div class="row">
+                      <div class="col-10">{{ group.name }}</div>
+                      <div class="col-2 text-center">
+                      <a
+                          href="#"
+                          class="mx-1 text-decoration-none text-not-bad edit-team"
+                          data-bs-toggle="modal"
+                          data-bs-target="#updateGroupModal"
+                          data-team='{"id": "{{ group.id }}", "name": "{{ group.name }}"}' 
+                          title="Editar"
+                      >
+                          <i class="fa-solid fa-pencil"></i>
+                      </a>
+                      <a
+                          href="{% url 'delete-team' group.id %}"
+                          class="mx-1 text-decoration-none text-dying"
+                          title="Eliminar"
+                      >
+                          <i class="fa-solid fa-trash-can"></i>
+                      </a>
+                      </div>
+                  </div>
+                  </div>
+              {% endfor %}
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="modal-body">
+          <p class="p-3 rounded-2 text-gris">
+            <i class="fas fa-info-circle me-1"></i>
+            Actualmente no estás asignado a ningún curso, por lo que no es posible crear grupos en este momento.
+          </p>
+        </div>
+      {% endif %}
     </div>
   </div>
 </div>
@@ -246,19 +268,19 @@
                         <option value="{{ group.id }}">{{ group.name }}</option>
                     {% endfor %}
                 </select>
+                <button
+                type="submit"
+                name="form-put-group"
+                id="form-put-group"
+                value="form-put-group"
+                class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3"
+                >
+                Seleccionar
+              </button>
             {% else %}
-                <p>No hay grupos disponibles.</p>
+              <p>No hay grupos disponibles.</p>
             {% endif %}
-          <button
-            type="submit"
-            name="form-put-group"
-            id="form-put-group"
-            value="form-put-group"
-            class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3"
-          >
-            Seleccionar
-          </button>
-        </form>
+            </form>
       </div>
     </div>
   </div>
@@ -312,5 +334,7 @@
     });
 
 </script>
+
+{% endif %}
 
 {% endblock %}

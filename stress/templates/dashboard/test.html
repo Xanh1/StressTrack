@@ -153,40 +153,49 @@
                     <h5 class="modal-title fw-bold" id="addTaskModalLabel">Crear Test</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <form id="taskForm" method="post" >
-                        {% csrf_token %}
-                        <div class="mb-4">
-                            <label for="title" class="d-block pb-1 fs-6 fw-bold">Título</label>
-                            <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="title" name="title" required>
-                        </div>
-                        <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
-                            <i class="fas fa-info-circle"></i> <strong>Nota:</strong> Todas las preguntas tendrán las mismas opciones de respuesta: <strong>Siempre, Casi siempre, A veces, Rara vez, Nunca</strong>.
-                        </p>
-                        <div class="mb-2">
-                            <div class="row">
-                                <div class="col-11">
-                                    <label class="pb-1 fs-6 fw-bold">Preguntas</label>
-                                </div>
-                                <div class="col-1 d-flex justify-content-center">
-                                    <button
-                                        id="btn-add-quest"
-                                        title="Agregar pregunta"
-                                        class="fs-7 bg-white text-center text-dark border-0 text-decoration-none">
-                                        <i class="fa-solid fa-plus-circle"></i>
-                                    </button>
+                {% if teaching %}
+                    <div class="modal-body">
+                        <form id="taskForm" method="post" >
+                            {% csrf_token %}
+                            <div class="mb-4">
+                                <label for="title" class="d-block pb-1 fs-6 fw-bold">Título</label>
+                                <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="title" name="title" required>
+                            </div>
+                            <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
+                                <i class="fas fa-info-circle"></i> <strong>Nota:</strong> Todas las preguntas tendrán las mismas opciones de respuesta: <strong>Siempre, Casi siempre, A veces, Rara vez, Nunca</strong>.
+                            </p>
+                            <div class="mb-2">
+                                <div class="row">
+                                    <div class="col-11">
+                                        <label class="pb-1 fs-6 fw-bold">Preguntas</label>
+                                    </div>
+                                    <div class="col-1 d-flex justify-content-center">
+                                        <button
+                                            id="btn-add-quest"
+                                            title="Agregar pregunta"
+                                            class="fs-7 bg-white text-center text-dark border-0 text-decoration-none">
+                                            <i class="fa-solid fa-plus-circle"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
 
-                        <div class="mb-4 container-quests">
-                            
-                        </div>
+                            <div class="mb-4 container-quests">
+                                
+                            </div>
 
-                        <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Crear</button>
-                    </form>
-                </div>
+                            <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Crear</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="modal-body">
+                        <p class="p-3 rounded-2 text-gris">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Actualmente no estás asignado a ningún curso, por lo que no es posible crear tests en este momento.
+                        </p>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -197,8 +197,13 @@ def list_tests(request):
             })
     
     if user.role == 'teacher':
-        teacher_tests =  user.teaching_courses.first().tests.all()
-        groups = user.teaching_courses.first().teams.all()
+        teaching = user.teaching_courses.first()
+        if teaching: 
+            teacher_tests =  teaching.tests.all()
+            groups = teaching.teams.all()
+        else:
+            teacher_tests = None
+            groups = None
     else:
         teacher_tests = None
         groups = None
@@ -208,6 +213,7 @@ def list_tests(request):
         'role': user.role,
         'teacher_tests': teacher_tests,
         'groups': groups,
+        'teaching': teaching,
     }
 
     return render(request, 'dashboard/test.html', context)
@@ -251,12 +257,13 @@ def course(request):
         students = None
         teacher = None
         groups = None
-
+    
     context = {
         'students': students,
         'role': request.user.role,
         'groups': groups,
         'teacher': teacher,
+        'course': course,
     }
 
     return render(request, 'dashboard/course.html', context)
