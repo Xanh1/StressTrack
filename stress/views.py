@@ -361,6 +361,17 @@ def delete_task(request, task_id):
     return redirect('list-tasks')
 
 @login_required
+def delete_test(request, test_id):
+
+    user = request.user
+    test = get_object_or_404(Test, id=test_id)
+
+    test.delete()
+    messages.success(request, 'El test se ha eliminado correctamente')
+    return redirect('list-test')
+
+
+@login_required
 def delete_team(request, team_id):
 
     user = request.user

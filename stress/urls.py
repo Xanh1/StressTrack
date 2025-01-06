@@ -18,6 +18,7 @@ urlpatterns = [
 
     # test
     path('test/<int:test_id>/', views.test, name = 'test'),
+    path('test/delete/<int:test_id>', views.delete_test, name = 'delete-test'),
 
     # task
     path('tasks/update/<int:task_id>/', views.list_tasks, name='update-task'),
