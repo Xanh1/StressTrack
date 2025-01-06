@@ -181,6 +181,7 @@
                                     </div>
                                     <div class="col-1 d-flex justify-content-center">
                                         <button
+                                            type="button"
                                             id="btn-add-quest"
                                             title="Agregar pregunta"
                                             class="fs-7 bg-white text-center text-dark border-0 text-decoration-none">
@@ -209,6 +210,23 @@
             </div>
         </div>
     </div>
+
+{% endif %}
+
+{% if teacher_tests %}
+
+<script>
+    document.getElementById('assignTestForm').addEventListener('submit', function(event) {
+        var testID = document.getElementById('assignTestForm').getAttribute('test-id');
+        
+        var hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'test_id';
+        hiddenInput.value = testID;
+        
+        this.appendChild(hiddenInput);
+    });
+</script>
 
 {% endif %}
 
@@ -247,17 +265,6 @@
                 document.getElementById('assignTestForm').setAttribute('test-id', testData.id);
             });
         });
-    });
-
-    document.getElementById('assignTestForm').addEventListener('submit', function(event) {
-        var testID = document.getElementById('assignTestForm').getAttribute('test-id');
-        
-        var hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'test_id';
-        hiddenInput.value = testID;
-        
-        this.appendChild(hiddenInput);
     });
     
     document.getElementById('btn-add-quest').addEventListener('click', function (e) {
