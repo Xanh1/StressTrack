@@ -5,6 +5,7 @@ from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserU
 from .models import Test, Option, Answer, Task, Team, CustomUser, Question
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
+from django.db.models import Avg
 from datetime import date
 
 def home(request):
@@ -50,6 +51,14 @@ def panel(request):
     team = user.group
     tasks = None
     tests = None
+    top_3_stressed_students = None
+    average_stress = None
+    course_teaching = user.teaching_courses.first()
+
+    if course_teaching:
+        students = course_teaching.students.filter(stress__gt=0) 
+        top_3_stressed_students = students.order_by('-stress')[:3]
+        average_stress = int(students.aggregate(avg_stress=Avg('stress'))['avg_stress'] or 0)
 
     if course:
         tasks = course.tasks.filter(due_date__gte=date.today()).order_by('due_date')
@@ -74,6 +83,9 @@ def panel(request):
         'color': color,
         'stress': stress,
         'role': user.role,
+        'top_3_stressed_students': top_3_stressed_students,
+        'average_stress': average_stress,
+        'course_teaching': course_teaching,
     }
 
     if tasks:
@@ -207,6 +219,7 @@ def list_tests(request):
     else:
         teacher_tests = None
         groups = None
+        teaching = None
 
     context = {
         'tests': list_test,

@@ -30,41 +30,43 @@
         </div>
     </div>
 
-    <div class="mb-4">
-        <label class="text-grisillo fw-bold my-2">Tarea</label>
-        {% if not task %}
-            <div class="bg-inf p-3 rounded-2 text-gris">
-                <i class="fas fa-info-circle"></i> No tienes tareas asignadas por el momento.
-            </div>
-        {% else %}
-            <div class="p-3 rounded-2 text-gris border border-1">
-                <div class="row">
-                    <div class="col-10">
-                        <i class="fa-solid fa-list me-3"></i>{{ task.title }}
-                    </div>
-                    <div class="col-2 text-end">
-                        <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
-                            {{ task.date }}
-                        </div>
-                    </div>
+    {% if role == 'student' %}
+    
+        <div class="mb-4">
+            <label class="text-grisillo fw-bold my-2">Tarea</label>
+            {% if not task %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No tienes tareas asignadas por el momento.
                 </div>
-            </div>
-        {% endif %}
-    </div>
-
-    <div class="mb-4">
-        <label class="text-grisillo fw-bold my-2">Test</label>
+            {% else %}
+                <div class="p-3 rounded-2 text-gris border border-1">
+                        <div class="row">
+                            <div class="col-10">
+                                <i class="fa-solid fa-list me-3"></i>{{ task.title }}
+                            </div>
+                            <div class="col-2 text-end">
+                                <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                                    {{ task.date }}
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="mb-4">
+            <label class="text-grisillo fw-bold my-2">Test</label>
         {% if not test %}
-            <div class="bg-inf p-3 rounded-2 text-gris">
-                <i class="fas fa-info-circle"></i> No tienes tests asignadas por el momento.
-            </div>
+        <div class="bg-inf p-3 rounded-2 text-gris">
+            <i class="fas fa-info-circle"></i> No tienes tests asignadas por el momento.
+        </div>
         {% else %}
-            <div class="p-3 rounded-2 text-gris border border-1">
-                <div class="row">
-                    <div class="col-10">
-                        <i class="fa-solid fa-list me-3"></i>{{ test.title }}
-                    </div>
-                    <div class="col-2 text-end">
+        <div class="p-3 rounded-2 text-gris border border-1">
+            <div class="row">
+                <div class="col-10">
+                    <i class="fa-solid fa-list me-3"></i>{{ test.title }}
+                </div>
+                <div class="col-2 text-end">
                         {% if not test.state %}
                             <div class="ms-4 p-1 d-inline rounded-4 fs-7">
                                 <a href="{% url 'test' test.id %}" class="text-decoration-none border border-dark text-dark py-1 px-3 rounded-3 fs-7">Realizar Test</a>
@@ -73,12 +75,66 @@
                             <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
                                 Completado
                             </div>
-                        {% endif %}
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
-            </div>
-        {% endif %}
-    </div>
+                {% endif %}
+        </div>
+
+    {% else %}
+        <div class="mb-4">
+            <label class="text-grisillo fw-bold my-2">Estudiantes <i class="fas fa-info-circle fs-8" title="Lista de los estudiante con mas nivel de estres del curso"></i></label>
+            {% if not top_3_stressed_students %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No existen estudiantes con niveles altos de estres.
+                </div>
+            {% else %}
+                {% for student in top_3_stressed_students %}
+                    <div class="p-3 rounded-2 text-gris border border-1">
+                        <div class="row">
+                            <div class="col-9">
+                                <i class="fa-solid fa-user me-3"></i>{{ student.first_name }} {{ student.last_name }}
+                            </div>
+                            <div class="col-3 text-end">
+                                <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                                    Nivel de estres: {{ student.stress }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="text-grisillo fw-bold my-2">Curso <i class="fas fa-info-circle fs-8" title="Promedio del nivel de estres del curso"></i></label>
+            {% if not course_teaching %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No estas asignado a un curso por el momento.
+                </div>
+            {% elif not top_3_stressed_students %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No existen estudiantes con niveles de estres.
+                </div>
+            {% else %}
+                <div class="p-3 rounded-2 text-gris border border-1">
+                        <div class="row">
+                            <div class="col-9">
+                                <i class="fa-solid fa-book me-3"></i>{{ course_teaching.name }}
+                            </div>
+                            <div class="col-3 text-end">
+                                <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">
+                                    Promedio nivel de estres: {{ average_stress }}
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            {% endif %}
+        </div>
+
+    {% endif %}
+
 </main>
 
 {% endblock %}
