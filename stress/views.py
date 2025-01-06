@@ -168,8 +168,10 @@ def list_tests(request):
 
     if request.method == 'POST':
         if 'assign-test-form' in request.POST:
-            test_id = request.POST.get('test_id')
+            test_id = request.POST.get('test-id')
             teams_id = request.POST.getlist('groups[]')
+            print(test_id)
+            print(teams_id)
             
             test = get_object_or_404(Test, id=test_id)
             teams = Team.objects.filter(id__in=teams_id)

@@ -70,7 +70,7 @@
                                     data-bs-toggle="modal" 
                                     data-bs-target="#assignTestModal{{ test.id }}"
                                     title="Asignar test"
-                                    data-test='{"id": "{{ test.id }}"}' 
+                                    data-test='{"id": "{{ test.id }}"}'
                                 >
                                     <i class="fa-solid fa-users"></i>
                                     Asignar test
@@ -102,7 +102,7 @@
                                         <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
                                             <i class="fas fa-info-circle"></i> Selecciona los grupos a los que deseas asignar este test.
                                         </p>
-                                        <form method="post" id="assignTestForm" class="p-2">
+                                        <form method="post" id="assignTestForm" class="p-2" data-test="{{ test.id }}">
                                             {% csrf_token %}
                                             <h5 class="fs-6 mb-3">Lista de grupos</h5>
                                             {% for group in groups %}
@@ -124,6 +124,7 @@
                                                     </label>
                                                 </div>
                                             {% endfor %}
+                                            <input hidden name="test-id" value="{{ test.id }}" >
                                             <button type="submit" 
                                                     class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
                                                     name="assign-test-form"
@@ -214,29 +215,12 @@
 {% endif %}
 
 {% if teacher_tests %}
-
-<script>
-    document.getElementById('assignTestForm').addEventListener('submit', function(event) {
-        var testID = document.getElementById('assignTestForm').getAttribute('test-id');
-        
-        var hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'test_id';
-        hiddenInput.value = testID;
-        
-        this.appendChild(hiddenInput);
-    });
-</script>
-
-{% endif %}
-
 <script>
 
     document.addEventListener("DOMContentLoaded", function() {
         const deleteLinks = document.querySelectorAll('a[id^="delete-task-"]');
 
         deleteLinks.forEach(link => {
-            console.log("no se que estoy haciendo aca pss");
             link.addEventListener('click', function(e) {
                 e.preventDefault();
 
@@ -257,15 +241,22 @@
             });
         });
     });
+    
+    /*document.addEventListener('DOMContentLoaded', function () {
+    // Evento delegado para capturar dinámicamente los clics en botones .assign-test
+    document.body.addEventListener('click', function (event) {
+        if (event.target.closest('.assign-test')) {
+            const button = event.target.closest('.assign-test');
+            const testData = JSON.parse(button.getAttribute('data-test'));
 
-    document.addEventListener('DOMContentLoaded', function () {
-        document.querySelectorAll('.assign-test').forEach(button => {
-            button.addEventListener('click', function () {
-                const testData = JSON.parse(this.getAttribute('data-test'));
-                document.getElementById('assignTestForm').setAttribute('test-id', testData.id);
-            });
-        });
+            const form = document.getElementById('assignTestForm');
+            if (form) {
+                form.setAttribute('test-id', testData.id);
+            }
+        }
     });
+    });*/
+
     
     document.getElementById('btn-add-quest').addEventListener('click', function (e) {
         e.preventDefault();
@@ -301,5 +292,8 @@
     });
 
 </script>
+
+{% endif %}
+
 
 {% endblock %}
