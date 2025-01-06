@@ -55,7 +55,8 @@ git clone https://github.com/Xanh1/StressTrack.git
 ### 2. Entrar al directorio y crear un entorno virtual
 ```bash
 cd StressTrack
-
+```
+```bash
 python -m venv venv
 ```
 
