@@ -2,7 +2,23 @@
     <div class="px-1">
         <a class="text-dark text-decoration-none fs-4" href="{% url 'panel' %}">StressTrack</a>
     </div>
-    <div class="px-1">
+    <div class="d-flex align-items-center px-1">
+        <!-- Icono de notificaciones -->
+        <div class="dropdown me-3">
+            <button class="bg-white position-relative border-0" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-regular fa-bell"></i> <!-- Ícono de campana -->
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    3 <!-- Número de notificaciones -->
+                </span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="notificationDropdown">
+                <li class="dropdown-header">Notificaciones</li>
+                <li><a class="dropdown-item" href="#">Nueva actividad registrada</a></li>
+                <li><a class="dropdown-item" href="#">Tu sesión expira pronto</a></li>
+                <li><a class="dropdown-item text-muted" href="#">Ver todas las notificaciones</a></li>
+            </ul>
+        </div>
+        <!-- Botón de Cerrar Sesión -->
         <a href="{% url 'logout' %}" class="text-decoration-none fs-7 bg-dark text-white border border-dark rounded-4 py-1 px-3">Cerrar Sesión</a>
     </div>
 </header>
