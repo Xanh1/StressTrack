@@ -31,10 +31,11 @@ Este es un proyecto para gestionar y realizar tests de estrés en estudiantes.
 - [x] **Editar perfil de usuario** (estudiantes, profesores)
 - [x] **Restableces contraseña olvidada**: (estudiante, profesores, administradores)
 - [x] **Eliminar test**: (profesores)
+- [x] **Notificaciones**: (estudiantes, profesores)
 
 ### Funcionalidades en Desarrollo 🚀
 - [-] **Modificar test**: (profesores)
-- [-] **Notificaciones**: (estudiantes, profesores, administradores)
+- [-] **Notificaciones**: (administradores)
 
 ### Funcionalidades Pendientes ⏳
 - [ ] **Registro de usuario**: (profesores, administradores)
@@ -44,6 +45,7 @@ Este es un proyecto para gestionar y realizar tests de estrés en estudiantes.
 - [ ] **Agregar recomendacion**: (profesores, administradores)
 - [ ] **Modificar recomendacio**: (profesores, administradores)
 - [ ] **Eliminar recomendacion**: (profesores, administradores)
+- [ ] **Eliminar cuenta**: (estudiante, profesores, administradores)
 
 ## Instalación
 
