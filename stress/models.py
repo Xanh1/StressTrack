@@ -100,3 +100,11 @@ class Answer(models.Model):
     def __str__(self):
         return f"{self.student} = {self.question} -> {self.option}"
 
+class Notification(models.Model):
+    message = models.CharField(max_length=255)
+    is_read = models.BooleanField(default=False)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='notifications')
+    url = models.CharField(max_length=30)
+
+    def __str__(self):
+        return f"{self.message} | {self.user}"

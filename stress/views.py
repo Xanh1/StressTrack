@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserUpdateForm, CustomPasswordChangeForm
-from .models import Test, Option, Answer, Task, Team, CustomUser, Question
+from .models import Test, Option, Answer, Task, Team, CustomUser, Question, Notification
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
 from django.db.models import Avg
@@ -86,6 +86,8 @@ def panel(request):
         'top_3_stressed_students': top_3_stressed_students,
         'average_stress': average_stress,
         'course_teaching': course_teaching,
+        'notifications': user.notifications.all(),
+        'unread_notifications': user.notifications.filter(is_read=False).count(),
     }
 
     if tasks:
@@ -134,11 +136,14 @@ def list_tasks(request):
             task.title = title
             task.due_date = due_date
             task.save()
+            
             messages.success(request, "La tarea se ha actualizado satisfactoriamente")
             return redirect('list-tasks')
         else:
-            response = create_task(title, due_date, course)
-            messages.success(request, response)
+            msg, task = create_task(title, due_date, course)
+            if task:
+                notify(request, course.students.all(), f'Se asignado una nueva tarea: {task.title}', 'list-tasks')
+            messages.success(request, msg)
             return redirect('list-tasks')
 
     if user.role == 'student':
@@ -155,6 +160,8 @@ def list_tasks(request):
         'tasks': tasks,
         'role': user.role,
         'course': course,
+        'notifications': user.notifications.all(),
+        'unread_notifications': user.notifications.filter(is_read=False).count(),
     }
 
     return render(request, 'dashboard/task.html', context)
@@ -170,14 +177,20 @@ def list_tests(request):
         if 'assign-test-form' in request.POST:
             test_id = request.POST.get('test-id')
             teams_id = request.POST.getlist('groups[]')
-            print(test_id)
-            print(teams_id)
             
             test = get_object_or_404(Test, id=test_id)
             teams = Team.objects.filter(id__in=teams_id)
             
             test.Team.set(teams)
             test.save()
+
+            students = set()
+    
+            for team in teams:
+                students.update(team.members.all())
+
+            notify(request, students=students, message='Se agregado un nuevo test', url='list-test')
+
             messages.success(request, "Se ha asignado el test correctamente")
             return redirect('list-test')            
         else:
@@ -229,6 +242,8 @@ def list_tests(request):
         'teacher_tests': teacher_tests,
         'groups': groups,
         'teaching': teaching,
+        'notifications': user.notifications.all(),
+        'unread_notifications': user.notifications.filter(is_read=False).count(),
     }
 
     return render(request, 'dashboard/test.html', context)
@@ -279,6 +294,8 @@ def course(request):
         'groups': groups,
         'teacher': teacher,
         'course': course,
+        'notifications': user.notifications.all(),
+        'unread_notifications': user.notifications.filter(is_read=False).count(),
     }
 
     return render(request, 'dashboard/course.html', context)
@@ -316,12 +333,15 @@ def profile(request):
         'form_pass': form_pass,
         'share_stress': user.share_stress_level,
         'role': user.role,
+        'notifications': user.notifications.all(),
+        'unread_notifications': user.notifications.filter(is_read=False).count(),
     }
 
     return render(request, 'dashboard/profile.html', context)
 
 @login_required
-def test(request, test_id):        
+def test(request, test_id):
+    user = request.user
     test = get_object_or_404(Test, id = test_id)
     questions = test.questions.all()
 
@@ -339,6 +359,9 @@ def test(request, test_id):
         
         request.user.stress = tmp_stress
         request.user.save()
+        if request.user.stress > 50:
+            teacher = test.course.teacher
+            notify(request, [teacher], f'El estudiante {request.user.first_name} tiene un nivel elevado de estres', 'course')
         messages.success(request, 'El test se ha completado satisfactoriamente')    
         return redirect('list-test')
         
@@ -346,7 +369,9 @@ def test(request, test_id):
         'role': request.user.role,
         'questions': questions,
         'test': test,
-        'opts': Option.choices
+        'opts': Option.choices,
+        'notifications': user.notifications.all(),
+        'unread_notifications': user.notifications.filter(is_read=False).count(),
     }
 
     return render(request, 'test/test_exe.html', context)
@@ -354,7 +379,7 @@ def test(request, test_id):
 def create_task(title, due_date, course):
 
     if not due_date:
-        return "Llena todos los campos"
+        return "Llena todos los campos", None
 
     task = Task.objects.create(
         title=title, 
@@ -362,7 +387,7 @@ def create_task(title, due_date, course):
         course=course
     )
 
-    return "La tarea se ha creado satisfactoriamente"
+    return "La tarea se ha creado satisfactoriamente", task
 
 @login_required
 def delete_task(request, task_id):
@@ -400,3 +425,21 @@ def delete_team(request, team_id):
 @login_required
 def prueba(request):
     return render(request, 'aiuda.html')
+
+
+@login_required
+def mark_notification_as_read(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    
+    if notification.is_read == False:
+        notification.is_read = True
+        notification.save()
+    
+    return redirect(notification.url)
+
+
+@login_required
+def notify(request, students, message, url):
+    for student in students:
+        Notification.objects.create(message=message, user=student, url=url)
+    

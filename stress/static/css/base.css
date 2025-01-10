@@ -44,7 +44,7 @@ body {
 }
 
 .fs-8 {
-  font-size: .7rem;
+  font-size: .7rem !important;
 }
 
 .my-4_5 {
@@ -75,17 +75,19 @@ body {
   background-color: rgb(248, 253, 255);
 }
 
+.bg-noti {
+  background-color: #ff7171;
+}
+
 .text-grisillo {
   color: #cacaca;
   font-size: .9rem;
 }
 
 .text-gris {
-  color: #8f8f8f;
+  color: #8f8f8f !important;
   font-size: .9rem;
 }
-
-
 
 .bg-color-grisillo {
   background-color: #ececec;

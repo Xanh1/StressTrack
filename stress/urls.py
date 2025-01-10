@@ -33,6 +33,9 @@ urlpatterns = [
     re_path(r'^reset/(?P<uidb64>[0-9A-za-z_\-]+)/(?P<token>.+)/$', PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirms.html'), name = 'password_reset_confirm'),
     path('reset/done',PasswordResetCompleteView.as_view(template_name='registration/password_reset_completes.html') , name = 'password_reset_complete'),
     
+    # notification
+    path('notification/change/<int:notification_id>/', views.mark_notification_as_read, name='notification'),
+
     # pruebas
     path('prueba/', views.prueba, name='prueba'),
 ]
