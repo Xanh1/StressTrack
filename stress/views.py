@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserUpdateForm, CustomPasswordChangeForm, CustomUserCreationRoleForm
-from .models import Test, Option, Answer, Task, Team, CustomUser, Question, Notification
+from .models import Test, Option, Answer, Task, Team, CustomUser, Question, Notification, Course
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
 from django.db.models import Avg
@@ -517,8 +517,11 @@ def course_admin(request):
 
     user = request.user
 
+    courses = Course.objects.all()
+
     context = {
         'role': user.role,
+        'courses': courses,
     }
 
     return render(request, 'dashboard/course-admin.html', context)

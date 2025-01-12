@@ -22,6 +22,44 @@
                 </button>
             </div>
         </div>
+        <label class="text-grisillo fw-bold my-2">
+            Lista
+        </label>
+        {% if courses %}
+            {% for course in courses %}
+                <div class="p-3 rounded-2 text-gris border border-1 my-2">
+                    <div class="row">
+                        <div class="col-3">
+                            <i class="fa-solid fa-book me-3"></i>{{ course.name }}
+                        </div>
+                        <div class="col-4 text-center">
+                            {{ course.teacher.first_name }} {{ course.teacher.last_name }}
+                        </div>
+                        <div class="col-3 text-center">
+                            <a href="#" class="mx-1 text-decoration-none text-gris">
+                                <i class="fa-solid fa-users"></i>
+                                    Asignar estudiantes
+                            </a>
+                        </div>
+                        <div class="col-2 text-end">
+                            <a href="" class="mx-1 text-decoration-none text-not-bad" title="Editar">
+                                <i class="fa-solid fa-pencil"></i>
+                            </a>
+                            <a  href="#" 
+                                class="mx-1 text-decoration-none text-dying" 
+                                title="Eliminar"
+                            >
+                                <i class="fa-solid fa-trash-can"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="bg-inf p-3 rounded-2 text-gris">
+                <i class="fas fa-info-circle me-2"></i> No existen cursos por el momento.
+            </div>
+        {% endif %}
     </div>
 </main>
 
