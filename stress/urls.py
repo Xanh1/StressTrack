@@ -15,6 +15,9 @@ urlpatterns = [
     path('tasks/', views.list_tasks, name='list-tasks'),
     path('tests/', views.list_tests, name='list-test'),
     path('course/', views.course, name='course'),
+    path('recommendation/', views.recommendation, name='recommendation'),
+    path('users/', views.user_admin, name='users'),
+    path('courses/', views.course_admin, name='courses'),
 
     # test
     path('test/<int:test_id>/', views.test, name = 'test'),
@@ -26,6 +29,10 @@ urlpatterns = [
     
     # teams
     path('course/team/delete/<int:team_id>/', views.delete_team, name='delete-team'),
+
+    # users
+    path('user/state/udate/<int:user_id>/', views.change_state_user, name='change-user-state'),
+    path('user/desactivate/', views.desactivate_account_notification, name='desactivate-account'),
     
     # reset password
     path('reset/password_reset', PasswordResetView.as_view(template_name='registration/password_reset_forms.html', email_template_name="registration/password_reset_emails.html"), name='password_reset'),

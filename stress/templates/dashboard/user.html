@@ -1,0 +1,267 @@
+{% extends "base/dashboard_base.html" %} 
+
+{% block content %} 
+
+{% include "elements/dashboard_sidebar.html" with role=role %} 
+
+{% include "elements/messages.html" %}
+
+<main class="main p-4 pt-2 pe-5">
+  <div class="my-4">
+        <div class="row">
+            <div class="col-11 p-0">
+                <h1 class="m-0">Usuarios</h1>
+            </div>
+            <div class="col-1 d-flex flex-column justify-content-center">
+                <button
+                    class="fs-7 text-center rounded-4 bg-white border border-dark border-2 text-dark text-decoration-none py-1 px-2"
+                    data-bs-toggle="modal"
+                    data-bs-target="#addUserModal"
+                >
+                    <i class="fa-solid fa-plus fs-8"></i> Crear
+                </button>
+            </div>
+        </div>
+        <label class="text-grisillo fw-bold my-2">
+            Lista
+        </label>
+        {% if users %}
+            {% for user in users %}
+                <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                    <div class="row">
+                        <div class="col-2">
+                            {% if user.role == 'student' %}
+                                <i class="fa-solid fa-user me-3"></i>
+                            {% else %}
+                                <i class="fa-solid fa-user-tie me-3"></i>
+                            {% endif %}
+                             {{ user.first_name }} {{ user.last_name }}
+                        </div>
+                        <div class="col-2 text-center">
+                            {{ user.dni }}
+                        </div>
+                        <div class="col-3 text-center ">
+                            {{ user.email }}
+                        </div>
+                        <div class="col-2 text-center">
+                            {% if user.role == 'student' %}
+                                Estudiante
+                            {% elif user.role == 'teacher' %}
+                                Profesor
+                            {% else %}
+                                Administrador
+                            {% endif %}
+                        </div>
+                        <div class="col-2 text-center ">
+                            {% if user.is_active %}
+                                <div class="ms-4 bg-active py-1 px-3 d-inline rounded-3 fs-7">
+                                    activo
+                                </div>
+                            {% else %}
+                                <div class="ms-4 bg-incative py-1 px-3 d-inline rounded-3 fs-7">
+                                    inactivo
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-1 text-center">
+                            <a  href="#"
+                                class="mx-1 text-decoration-none text-not-bad edit-task" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editUserModal{{ user.id }}"
+                                    title="Editar">
+                                    <i class="fa-solid fa-pencil"></i>
+                            </a>
+                            <a  href="{% url 'change-user-state' user.id %}"
+                                class="mx-1 text-decoration-none text-not-bad edit-task text-dying"
+                                title="Activar/Desactivar usuario"
+                                id="update-state-user-{{ user.id }}"
+                            >
+                                <i class="fa-solid fa-power-off"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="editUserModal{{ user.id }}" tabindex="-1" aria-labelledby="assignTestModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title fw-bold" id="assignTestModalLabel">Editar Usuario</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" class="mb-2 p-2">
+                                    {% csrf_token %}
+                                    <div class="row mb-3">
+                                        <input hidden name="user-id" value="{{ user.id }}" >
+                                        <div class="col-6">
+                                            <label class="d-block pb-1 fs-7" for="">Nombre</label>
+                                            <input  type="text" 
+                                                    class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2"
+                                                    value="{{ user.first_name }}"
+                                                    name="first_name"
+                                        >
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="d-block pb-1 fs-7" for="">Apellido</label>
+                                            <input  type="text" 
+                                                    class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2"
+                                                    value="{{ user.last_name }}"
+                                                    name="last_name"
+                                            >
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <label class="d-block pb-1 fs-7" for="">Dni</label>
+                                            <input  type="text" 
+                                                    class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2"
+                                                    value="{{ user.dni }}"
+                                                    name="dni"
+                                            >
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <label class="d-block pb-1 fs-7" for="">Correo electrónico</label>
+                                            <input  type="email" 
+                                                    class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2"
+                                                    value="{{ user.email }}"
+                                                    name="email"
+                                            >
+                                        </div>
+                                    </div>
+                        
+                                    <div class="d-flex justify-content-start mt-4 pt-2">
+                                        <button class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3"
+                                            type="submit" name="form-update-user" value="form-update-user">Actualizar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+        {% endif %}
+    </div>
+</main>
+
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="addUserModalLabel">Registrar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="userForm" method="post" >
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="d-block pb-1 fs-7 fw-semibold" for="">Nombre</label>
+                            {{ form.first_name }}
+                            <div>
+                                {% for error in form.first_name.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="d-block pb-1 fs-7 fw-semibold" for="">Apellido</label>
+                            {{ form.last_name }}
+                            <div>
+                                {% for error in form.last_name.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="d-block pb-1 fs-7 fw-semibold" for="">Dni</label>
+                        {{ form.dni }}
+                        <div>
+                            {% for error in form.dni.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+            
+                    <div class="mb-3">
+                        <label class="d-block pb-1 fs-7 fw-semibold" for="">Correo Electrónico</label>
+                        {{ form.email }}
+                        <div>
+                            {% for error in form.email.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="d-block pb-1 fs-7 fw-semibold" for="">Rol</label>
+                        {{ form.role }}
+                        <div>
+                            {% for error in form.role.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="d-block pb-1 fs-7 fw-semibold" for="">Contraseña</label>
+                            {{ form.password1 }}
+                            <div>
+                                {% for error in form.password1.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <label class="d-block pb-1 fs-7 fw-semibold" for="">Verificar Contraseña</label>
+                            {{ form.password2 }}
+                            <div>
+                                {% for error in form.password2.errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" name="form-create" value="form-create" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Registrar</button>
+                    </form>
+                </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const deleteLinks = document.querySelectorAll('a[id^="update-state-user-"]');
+
+        deleteLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: '¿Realmente quieres cambiar el estado del usuario?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true,
+                    confirmButtonColor: "#ff5656"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = link.getAttribute('href');
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+{% endblock %}

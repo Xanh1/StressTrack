@@ -93,3 +93,42 @@ class CustomAuthenticationForm(AuthenticationForm):
         'placeholder': '**********',
         'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2'
     }))
+
+class CustomUserCreationRoleForm(UserCreationForm):
+    first_name = forms.CharField(widget=forms.TextInput(attrs={
+        'placeholder': 'Andy',
+        'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2'
+    }))
+    
+    last_name = forms.CharField(widget=forms.TextInput(attrs={
+        'placeholder': 'Apolo',
+        'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2'
+    }))
+    
+    dni = forms.CharField(widget=forms.TextInput(attrs={
+        'placeholder': '1103982731',
+        'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2'
+    }))
+    
+    email = forms.EmailField(widget=forms.EmailInput(attrs={
+        'placeholder': 'ejemplo@unl.edu.ec',
+        'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2'
+    }))
+
+    role = forms.ChoiceField(choices=CustomUser.ROLE_CHOICES, widget=forms.Select(attrs={
+        'class': 'w-100 fs-7 py-2 px-2 bg-white border border-1 border-dark rounded-2'
+    }))
+
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={
+        'placeholder': '**********',
+        'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2'
+    }))
+    
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={
+        'placeholder': '**********',
+        'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2'
+    }))
+    
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'dni', 'email', 'role', 'password1', 'password2']

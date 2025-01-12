@@ -69,6 +69,15 @@ body {
   margin-bottom: 2rem;
 }
 
+.bg-active {
+  background-color: #e8ffee;
+}
+
+.bg-incative {
+  background-color: #ffdfdf;
+}
+
+
 .bg-good {
   background-color: #dbffe4;
 }

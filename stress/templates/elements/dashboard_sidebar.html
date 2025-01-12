@@ -14,22 +14,25 @@
         <ul class="list-unstyled d-flex flex-column justify-content-center">
             <li class="py-2"><a class="text-decoration-none text-dark  fs-5_5" title="Panel" href="{% url 'panel' %}"><i
                         class="fa-solid fa-table"></i></a></li>
-            <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Tests" href="{% url 'list-test' %}"><i
-                        class="fa-regular fa-pen-to-square"></i></a></li>
+            <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Tests" href="{% url 'list-test' %}"><i class="fa-regular fa-pen-to-square"></i></a></li>
             <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Tareas" href="{% url 'list-tasks' %}"><i
                         class="fa-solid fa-list-check"></i></a></li>
             <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Curso" href="{% url 'course' %}"><i
                         class="fa-solid fa-book"></i></a></li>
+            <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Recomendaciones" href="{% url 'recommendation' %}">
+                        <i class="fa-regular fa-comment"></i></a></li>
         </ul>
     {% elif role == 'superuser' %}
-        <ul class="list-unstyled">
-            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'panel' %}"><i
-                        class="fa-solid fa-table"></i> Panel</a></li>
-            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'list-test' %}"><i
-                        class="fa-regular fa-pen-to-square"></i> Test</a></li>
-            <li class=" py-2"><a class="text-decoration-none text-dark" href="{% url 'list-tasks' %}"><i
-                        class="fa-solid fa-list-check"></i> Tareas</a></li>
-        </ul>
+    <ul class="list-unstyled d-flex flex-column justify-content-center">
+        <li class="py-2"><a class="text-decoration-none text-dark  fs-5_5" title="Panel" href="{% url 'panel' %}"><i
+                    class="fa-solid fa-table"></i></a></li>
+        <li class=" py-2"><a class="text-decoration-none text-dark fs-6" title="Usuarios" href="{% url 'users' %}">
+                    <i class="fa-solid fa-users"></i></a></li>
+        <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Curso" href="{% url 'courses' %}"><i
+                    class="fa-solid fa-book"></i></a></li>
+        <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Recomendaciones" href="{% url 'recommendation' %}">
+                    <i class="fa-regular fa-comment"></i></a></li>
+    </ul>
     {% endif %}
     <ul class="list-unstyled">
         <li class=""><a class="text-decoration-none text-dark" title="Perfil" href="{% url 'profile' %}"><i

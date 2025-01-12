@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
-from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserUpdateForm, CustomPasswordChangeForm
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserUpdateForm, CustomPasswordChangeForm, CustomUserCreationRoleForm
 from .models import Test, Option, Answer, Task, Team, CustomUser, Question, Notification
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
@@ -16,6 +16,16 @@ def home(request):
 def log_in(request):
     if request.method == 'POST':
         form = CustomAuthenticationForm(request, request.POST)
+        user = CustomUser.objects.filter(email=request.POST.get('username')).first()
+        
+        if not user:
+            messages.error(request, "Credenciales incorrectas. Inténtalo de nuevo")
+            return redirect('login')
+
+        if user.is_active == False:
+            messages.error(request, "Tu cuenta está inactiva. Contacta al administrador")
+            return redirect('login') 
+
         if form.is_valid():
             email = form.cleaned_data['username']
             password = form.cleaned_data['password']
@@ -189,7 +199,7 @@ def list_tests(request):
             for team in teams:
                 students.update(team.members.all())
 
-            notify(request, students=students, message='Se agregado un nuevo test', url='list-test')
+            notify(request, users=students, message='Se agregado un nuevo test', url='list-test')
 
             messages.success(request, "Se ha asignado el test correctamente")
             return redirect('list-test')            
@@ -280,7 +290,7 @@ def course(request):
             return redirect('course')
 
     if course:
-        students = course.students.all()
+        students = course.students.filter(is_active=True).all()
         teacher = course.teacher
         groups = course.teams.all()
     else:
@@ -439,7 +449,89 @@ def mark_notification_as_read(request, notification_id):
 
 
 @login_required
-def notify(request, students, message, url):
-    for student in students:
-        Notification.objects.create(message=message, user=student, url=url)
+def notify(request, users, message, url):
+    for user in users:
+        Notification.objects.create(message=message, user=user, url=url)
     
+@login_required
+def recommendation(request):
+    user = request.user
+
+    context = {
+        'role': user.role,
+    }
+    return render(request, 'dashboard/recommendation.html', context)
+
+@login_required
+def user_admin(request):
+
+    form = CustomUserCreationRoleForm()
+
+    if request.method == 'POST':
+        if 'form-create' in request.POST:
+            form = CustomUserCreationRoleForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+                messages.success(request, 'El usuario se ha creado satisfactoriamente')
+                return redirect('users')
+        else:
+            user = get_object_or_404(CustomUser, id=request.POST.get('user-id'))
+            user.first_name = request.POST.get('first_name')
+            user.last_name = request.POST.get('last_name')
+            user.dni = request.POST.get('dni')
+            user.email = request.POST.get('email')
+
+            user.save()
+            
+            messages.success(request, "Usuario actualizado satisfactoriamente")
+            return redirect('users')
+
+    user = request.user
+
+
+    users = CustomUser.objects.all()
+
+
+    context = {
+        'role': user.role,
+        'users': users,
+        'form': form,
+    }
+
+    return render(request, 'dashboard/user.html', context)
+
+@login_required
+def change_state_user(request, user_id):
+    user = get_object_or_404(CustomUser, id=user_id)
+
+    user.is_active = not user.is_active
+
+    user.save()
+
+    messages.success(request, f'El estado del usuario ({user.first_name} {user.last_name}) ha sido actualizado')
+
+    return redirect('users')
+
+@login_required
+def course_admin(request):
+
+    user = request.user
+
+    context = {
+        'role': user.role,
+    }
+
+    return render(request, 'dashboard/course-admin.html', context)
+
+@login_required
+def desactivate_account_notification(request):
+    print("aca ando pss")
+    user = request.user
+
+    users = CustomUser.objects.filter(role='superuser')
+
+    notify(request, users, f'El usuario {user.email} quiere desactivar su cuenta', 'users')
+
+    messages.success(request, 'El administrador ha sido notificado y procesará tu solicitud pronto. Por favor, espera a que tu cuenta sea desactivada.')
+
+    return redirect('profile')
