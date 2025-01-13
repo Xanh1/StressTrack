@@ -18,6 +18,10 @@ urlpatterns = [
     path('recommendation/', views.recommendation, name='recommendation'),
     path('users/', views.user_admin, name='users'),
     path('courses/', views.course_admin, name='courses'),
+    
+    # course
+    path('course/delete/<int:course_id>', views.delete_course , name='delte-course'),
+    
 
     # test
     path('test/<int:test_id>/', views.test, name = 'test'),

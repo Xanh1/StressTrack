@@ -1,5 +1,5 @@
 from django import forms
-from .models import CustomUser
+from .models import CustomUser, Course
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 
 class CustomUserCreationForm(UserCreationForm):
@@ -132,3 +132,22 @@ class CustomUserCreationRoleForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ['first_name', 'last_name', 'dni', 'email', 'role', 'password1', 'password2']
+
+
+class CreateCourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = ['name', 'teacher']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['teacher'].queryset = self.fields['teacher'].queryset.filter(role='teacher')
+        self.fields['teacher'].widget.attrs.update({
+            'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2 bg-white',
+            'placeholder': '',
+        })
+
+        self.fields['name'].widget.attrs.update({
+            'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2',
+            'placeholder': '',
+        })

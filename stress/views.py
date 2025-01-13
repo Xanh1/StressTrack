@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
-from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserUpdateForm, CustomPasswordChangeForm, CustomUserCreationRoleForm
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserUpdateForm, CustomPasswordChangeForm, CustomUserCreationRoleForm, CreateCourseForm
 from .models import Test, Option, Answer, Task, Team, CustomUser, Question, Notification, Course
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
@@ -515,6 +515,16 @@ def change_state_user(request, user_id):
 @login_required
 def course_admin(request):
 
+    form = CreateCourseForm()
+    
+    if request.method == 'POST':
+        form = CreateCourseForm(request.POST)
+        
+        if form.is_valid():
+            course = form.save()
+            messages.success(request, 'El curso se ha creado satisfactoriamente')
+            return redirect('courses')
+    
     user = request.user
 
     courses = Course.objects.all()
@@ -522,13 +532,21 @@ def course_admin(request):
     context = {
         'role': user.role,
         'courses': courses,
+        'form': form,
     }
 
     return render(request, 'dashboard/course-admin.html', context)
 
 @login_required
+def delete_course(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    course.delete()
+    messages.success(request, 'Se ha eleminado satisfactoriamente el curso')
+    return redirect('courses')
+    
+
+@login_required
 def desactivate_account_notification(request):
-    print("aca ando pss")
     user = request.user
 
     users = CustomUser.objects.filter(role='superuser')

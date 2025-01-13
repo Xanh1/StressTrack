@@ -60,7 +60,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = []
 
     def __str__(self):
-        return f"{self.email} ({self.get_role_display()})"
+        return f"{self.first_name} {self.last_name}"
 
 class Task(models.Model):
     title = models.CharField(max_length=200)
