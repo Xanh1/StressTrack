@@ -36,13 +36,22 @@
                             {{ course.teacher.first_name }} {{ course.teacher.last_name }}
                         </div>
                         <div class="col-4 text-center">
-                            <a href="#" class="mx-1 text-decoration-none text-gris">
-                                <i class="fa-solid fa-users"></i>
-                                    Asignar estudiantes
+                            <a href="#" 
+                                class="mx-1 text-decoration-none text-gris assign-students-link" 
+                                data-id="{{ course.id }}" 
+                                title="Asignar Estudiantes"
+                            >
+                                    <i class="fa-solid fa-users"></i> Asignar estudiantes
                             </a>
                         </div>
                         <div class="col-1 text-center">
-                            <a href="" class="mx-1 text-decoration-none text-not-bad" title="Editar">
+                            <a href="#" 
+                                class="mx-1 text-decoration-none text-not-bad edit-course-link" 
+                                title="Editar"
+                                data-id="{{ course.id }}" 
+                                data-name="{{ course.name }}" 
+                                data-teacher="{{ course.teacher.id }}"
+                            >
                                 <i class="fa-solid fa-pencil"></i>
                             </a>
                             <a  href="{% url 'delte-course' course.id %}" 
@@ -89,8 +98,100 @@
     </div>
 </div>
 
+<div class="modal fade" id="editCourseModal" tabindex="-1" aria-labelledby="editCourseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="editCourseModalLabel">Editar Curso</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editCourseForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="course_id" id="edit-course-id">
+                    <div class="mb-3">
+                        <label for="edit-name" class="d-block pb-1 fs-7 fw-bold">Nombre</label>
+                        <input type="text" name="name" id="edit-name" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="edit-teacher" class="d-block pb-1 fs-7 fw-bold">Profesor</label>
+                        <select name="teacher" id="edit-teacher" class="w-100 bg-white fs-7 py-2 px-2 border border-1 border-dark rounded-2">
+                            {% for teacher in teachers %}
+                                <option value="{{ teacher.id }}">{{ teacher.first_name }} {{ teacher.last_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Actualizar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="assignStudentsModal" tabindex="-1" aria-labelledby="assignStudentsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="assignStudentsModalLabel">Asignar Estudiantes</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="assignStudentsForm" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="course_id" id="assign-course-id">
+                    <div class="mb-3">
+                        <label for="students" class="d-block pb-1 fs-7 fw-bold">Seleccionar Estudiantes</label>
+                        <select name="students" id="students" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" multiple>
+                            {% for student in students %}
+                                <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Asignar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-    
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const assignLinks = document.querySelectorAll('a.assign-students-link');
+
+        assignLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const courseId = this.dataset.id;
+
+                document.getElementById('assign-course-id').value = courseId;
+
+                const assignModal = new bootstrap.Modal(document.getElementById('assignStudentsModal'));
+                assignModal.show();
+            });
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const editLinks = document.querySelectorAll('a.edit-course-link');
+
+        editLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const courseId = this.dataset.id;
+                const courseName = this.dataset.name;
+                const courseTeacher = this.dataset.teacher;
+
+                document.getElementById('edit-course-id').value = courseId;
+                document.getElementById('edit-name').value = courseName;
+                document.getElementById('edit-teacher').value = courseTeacher;
+
+                const editModal = new bootstrap.Modal(document.getElementById('editCourseModal'));
+                editModal.show();
+            });
+        });
+    });
+
     document.addEventListener("DOMContentLoaded", function() {
         const deleteLinks = document.querySelectorAll('a[id^="delete-course-"]');
 

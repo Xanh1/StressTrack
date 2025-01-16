@@ -569,28 +569,57 @@ def change_state_user(request, user_id):
 
 @login_required
 def course_admin(request):
-
     form = CreateCourseForm()
+
+    if request.method == 'POST' and 'students' in request.POST:
+        course_id = request.POST.get('course_id')
+        student_ids = request.POST.getlist('students')
+        course = Course.objects.get(id=course_id)
+
+        for student_id in student_ids:
+            student = CustomUser.objects.get(id=student_id, role='student')
+
+            if student.course != course:  # i need check this
+                student.group = None
+            student.course = course
+            student.save()
+
+        messages.success(request, 'Estudiantes asignados correctamente al curso.')
+        return redirect('courses')
     
     if request.method == 'POST':
-        form = CreateCourseForm(request.POST)
-        
-        if form.is_valid():
-            course = form.save()
-            messages.success(request, 'El curso se ha creado satisfactoriamente')
-            return redirect('courses')
-    
-    user = request.user
+        if 'course_id' in request.POST:
+            course_id = request.POST.get('course_id')
+            course = Course.objects.get(id=course_id)
+            form = CreateCourseForm(request.POST, instance=course)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'El curso se ha actualizado satisfactoriamente')
+                return redirect('courses')
+        else:
+            form = CreateCourseForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'El curso se ha creado satisfactoriamente')
+                return redirect('courses')
 
+    user = request.user
     courses = Course.objects.all()
+    teachers = CustomUser.objects.filter(role='teacher')
+    students = CustomUser.objects.filter(role='student')
+
+    print(students)
 
     context = {
         'role': user.role,
         'courses': courses,
         'form': form,
+        'teachers': teachers,
+        'students': students,
     }
 
     return render(request, 'dashboard/course-admin.html', context)
+
 
 @login_required
 def delete_course(request, course_id):
