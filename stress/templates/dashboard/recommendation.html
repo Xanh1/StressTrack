@@ -37,7 +37,7 @@
                             <a  href="#"
                                 class="mx-1 text-decoration-none text-not-bad edit-task" 
                                 data-bs-toggle="modal"
-                                data-bs-target="#updateModal"
+                                data-bs-target="#updateRecoModal{{ recommendation.id }}""
                                 title="Editar">
                                 <i class="fa-solid fa-pencil"></i>
                             </a>
@@ -48,6 +48,39 @@
                             >
                                 <i class="fa-solid fa-trash-can"></i>
                             </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="updateRecoModal{{ recommendation.id }}" tabindex="-1" aria-labelledby="assignTestModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title fw-bold" id="assignTestModalLabel">Editar Recomendación</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="taskForm" method="post" >
+                                    {% csrf_token %}
+                                    <input type="text" name="recommendation" id="recommendation" value="{{ recommendation.id }}" hidden>
+                                    <div class="mb-3">
+                                        <label for="title" class="d-block pb-1 fs-7 fw-bold">Titulo</label>
+                                        <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="title" name="title" required value="{{ recommendation.title }}">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="description" class="d-block pb-1 fs-7 fw-bold">Descripción</label>
+                                        <input type="text" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="description" name="description" required value="{{ recommendation.description }}">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="min" class="d-block pb-1 fs-7 fw-bold">Porcentaje mínimo (%)</label>
+                                        <input type="number" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="min" name="min_percent" required value="{{ recommendation.min_percent }}">
+                                    </div>
+                                    <div class="mb-4">
+                                        <label for="max" class="d-block pb-1 fs-7 fw-bold">Porcentaje máximo (%)</label>
+                                        <input type="number" class="w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2" id="max" name="max_percent" required value="{{ recommendation.max_percent }}">
+                                    </div>
+                                    <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3" value="form-update" id="form-update" name="form-update">Actualizar</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -79,11 +112,11 @@
                         {{ form.description }}
                     </div>
                     <div class="mb-4">
-                        <label for="due_date" class="d-block pb-1 fs-7 fw-bold">Porcentaje mínimo</label>
+                        <label for="due_date" class="d-block pb-1 fs-7 fw-bold">Porcentaje mínimo (%)</label>
                         {{ form.min_percent }}
                     </div>
                     <div class="mb-4">
-                        <label for="due_date" class="d-block pb-1 fs-7 fw-bold">Porcentaje máximo</label>
+                        <label for="due_date" class="d-block pb-1 fs-7 fw-bold">Porcentaje máximo (%)</label>
                         {{ form.max_percent }}
                     </div>
                     <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Agregar</button>

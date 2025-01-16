@@ -461,11 +461,26 @@ def recommendation(request):
     form = RecommendationForm()
     
     if request.method == 'POST':
-        form = RecommendationForm(request.POST)
-        if form.is_valid():
-            recommendation = form.save()
-            messages.success(request, 'Se ha creado satisfactoriamente una recomendación')
+
+        if 'form-update' in request.POST:
+            recommendation = get_object_or_404(Recommendation, id=request.POST.get('recommendation'))
+
+            recommendation.title = request.POST.get('title')
+            recommendation.description = request.POST.get('description')
+            recommendation.min_percent = request.POST.get('min_percent')
+            recommendation.max_percent = request.POST.get('max_percent')
+
+            recommendation.save()
+
+            messages.success(request, 'La recomendación se actualizo correctamente')
             return redirect('recommendation')
+
+        else:
+            form = RecommendationForm(request.POST)
+            if form.is_valid():
+                recommendation = form.save()
+                messages.success(request, 'Se ha creado satisfactoriamente una recomendación')
+                return redirect('recommendation')
     
     recommendations = Recommendation.objects.all()
 
