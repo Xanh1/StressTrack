@@ -1,5 +1,5 @@
 from django import forms
-from .models import CustomUser, Course
+from .models import CustomUser, Course, Recommendation
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 
 class CustomUserCreationForm(UserCreationForm):
@@ -148,6 +148,36 @@ class CreateCourseForm(forms.ModelForm):
         })
 
         self.fields['name'].widget.attrs.update({
+            'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2',
+            'placeholder': '',
+        })
+
+
+class RecommendationForm(forms.ModelForm):
+    class Meta:
+        model = Recommendation
+        fields = ['title', 'description', 'min_percent', 'max_percent']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Personalizar estilos de los campos
+        self.fields['title'].widget.attrs.update({
+            'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2',
+            'placeholder': '',
+        })
+
+        self.fields['description'].widget.attrs.update({
+            'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2',
+            'placeholder': '',
+        })
+
+        self.fields['min_percent'].widget.attrs.update({
+            'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2',
+            'placeholder': '',
+        })
+
+        self.fields['max_percent'].widget.attrs.update({
             'class': 'w-100 fs-7 py-1 px-2 border border-1 border-dark rounded-2',
             'placeholder': '',
         })

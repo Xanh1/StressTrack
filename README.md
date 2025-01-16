@@ -36,17 +36,17 @@ Este es un proyecto para gestionar y realizar tests de estrés en estudiantes.
 - [x] **Desactivar cuenta**: (estudiante, profesores, administradores)
 - [x] **Agregar curso**: (administradores)
 - [x] **Eliminar curso**: (administradores)
+- [x] **Agregar recomendación**: (profesores, administradores)
+- [x] **Eliminar recomendación**: (profesores, administradores)
 
 ### Funcionalidades en Desarrollo 🚀
 - [-] **Modificar test**: (profesores)
 - [-] **Agregar lista por default al test**: (profesores)
 - [-] **Asignar estudiantes a un curso**: (administrador)
+- [ ] **Modificar recomendación**: (profesores, administradores)
 
 ### Funcionalidades Pendientes ⏳
 - [ ] **Modificar curso**: (administradores)
-- [ ] **Agregar recomendacion**: (profesores, administradores)
-- [ ] **Modificar recomendacio**: (profesores, administradores)
-- [ ] **Eliminar recomendacion**: (profesores, administradores)
 
 ## Instalación
 

@@ -46,6 +46,9 @@ urlpatterns = [
     
     # notification
     path('notification/change/<int:notification_id>/', views.mark_notification_as_read, name='notification'),
+    
+    # recommendation
+    path('recommendation/delete/<int:reco_id>/', views.delete_recommendation, name='delete-recommendation'),
 
     # pruebas
     path('prueba/', views.prueba, name='prueba'),

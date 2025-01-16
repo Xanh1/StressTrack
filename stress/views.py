@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
-from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserUpdateForm, CustomPasswordChangeForm, CustomUserCreationRoleForm, CreateCourseForm
-from .models import Test, Option, Answer, Task, Team, CustomUser, Question, Notification, Course
+from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserUpdateForm, CustomPasswordChangeForm, CustomUserCreationRoleForm, CreateCourseForm, RecommendationForm
+from .models import Test, Option, Answer, Task, Team, CustomUser, Question, Notification, Course, Recommendation
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
 from django.db.models import Avg
@@ -455,12 +455,34 @@ def notify(request, users, message, url):
     
 @login_required
 def recommendation(request):
+    
     user = request.user
+    
+    form = RecommendationForm()
+    
+    if request.method == 'POST':
+        form = RecommendationForm(request.POST)
+        if form.is_valid():
+            recommendation = form.save()
+            messages.success(request, 'Se ha creado satisfactoriamente una recomendación')
+            return redirect('recommendation')
+    
+    recommendations = Recommendation.objects.all()
 
     context = {
         'role': user.role,
+        'recommendations': recommendations,
+        'form': form,
     }
+    
     return render(request, 'dashboard/recommendation.html', context)
+
+@login_required
+def delete_recommendation(request, reco_id):
+    recommendation = get_object_or_404(Recommendation, id = reco_id)
+    recommendation.delete()
+    messages.success(request, 'Se ha eliminado correctamente la recomendación')
+    return redirect('recommendation')
 
 @login_required
 def user_admin(request):
@@ -556,3 +578,4 @@ def desactivate_account_notification(request):
     messages.success(request, 'El administrador ha sido notificado y procesará tu solicitud pronto. Por favor, espera a que tu cuenta sea desactivada.')
 
     return redirect('profile')
+

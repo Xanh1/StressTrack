@@ -6,7 +6,7 @@
 
 {% include "elements/messages.html" %}
 
-<main class="main p-4 pt-2 pe-5">
+<main class="main p-4 pt-3 pe-5">
   <div class="my-4">
         <div class="row">
             <div class="col-11 p-0">
@@ -16,13 +16,110 @@
                 <button
                     class="fs-7 text-center rounded-4 bg-white border border-dark border-2 text-dark text-decoration-none py-1 px-2"
                     data-bs-toggle="modal"
-                    data-bs-target="#addGroupModal"
+                    data-bs-target="#addRecoModal"
                 >
                     <i class="fa-solid fa-plus fs-8"></i> Crear
                 </button>
             </div>
         </div>
+        <label class="text-grisillo fw-bold my-2">Lista</label>
+        {% if recommendations %}
+            {% for recommendation in recommendations %}
+                <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                    <div class="row">
+                        <div class="col-4">
+                            <i class="fa-solid fa-list me-3"></i>{{ recommendation.title }}
+                        </div>
+                        <div class="col-7">
+                            {{ recommendation.description }}
+                        </div>
+                        <div class="col-1 text-center">
+                            <a  href="#"
+                                class="mx-1 text-decoration-none text-not-bad edit-task" 
+                                data-bs-toggle="modal"
+                                data-bs-target="#updateModal"
+                                title="Editar">
+                                <i class="fa-solid fa-pencil"></i>
+                            </a>
+                            <a  href="{% url 'delete-recommendation' recommendation.id %}"
+                                class="mx-1 text-decoration-none text-dying" 
+                                title="Eliminar"
+                                id="delete-reco-{{ recommendation.id }}"
+                            >
+                                <i class="fa-solid fa-trash-can"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="bg-inf p-3 my-2 rounded-2 text-gris">
+                <i class="fas fa-info-circle me-2"></i> No existen recomendaciones por el momento.
+            </div>
+        {% endif %}
     </div>
 </main>
+
+<div class="modal fade" id="addRecoModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="addTaskModalLabel">Crear Recomendación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="taskForm" method="post" >
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="title" class="d-block pb-1 fs-7 fw-bold">Titulo</label>
+                        {{ form.title }}
+                    </div>
+                    <div class="mb-4">
+                        <label for="due_date" class="d-block pb-1 fs-7 fw-bold">Descripción</label>
+                        {{ form.description }}
+                    </div>
+                    <div class="mb-4">
+                        <label for="due_date" class="d-block pb-1 fs-7 fw-bold">Porcentaje mínimo</label>
+                        {{ form.min_percent }}
+                    </div>
+                    <div class="mb-4">
+                        <label for="due_date" class="d-block pb-1 fs-7 fw-bold">Porcentaje máximo</label>
+                        {{ form.max_percent }}
+                    </div>
+                    <button type="submit" class="fs-7 bg-dark text-white border border border-dark rounded-2 py-1 px-3">Agregar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const deleteLinks = document.querySelectorAll('a[id^="delete-reco-"]');
+
+        deleteLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: 'Esta recomendación se eliminará permanentemente.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true,
+                    confirmButtonColor: "#ff5656"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = link.getAttribute('href');
+                    }
+                });
+            });
+        });
+    });
+
+</script>
 
 {% endblock %}

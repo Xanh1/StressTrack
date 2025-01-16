@@ -32,6 +32,16 @@ class Team(models.Model):
     def __str__(self):
         return f"{self.name}"
 
+
+class Recommendation(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.CharField(max_length=255)
+    min_percent = models.IntegerField()
+    max_percent = models.IntegerField()
+    
+    def __str__(self):
+        return self.title
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = [
         ('student', 'Alumno'),
@@ -50,6 +60,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     stress = models.IntegerField(default=0)
     share_stress_level = models.BooleanField(default=False)
+    recommendation = models.ForeignKey(Recommendation, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
 
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='students', null=True, blank=True)
     group = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='members', null=True, blank=True)
@@ -108,3 +119,4 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.message} | {self.user}"
+
