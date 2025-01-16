@@ -38,7 +38,7 @@
                     <div class="p-3 my-2 rounded-2 text-gris border border-1">
                         <div class="row">
                             <div class="col-10">
-                                <i class="fa-solid fa-list me-3"></i>{{ test.title }}
+                                <i class="fa-regular fa-pen-to-square me-3"></i> {{ test.title }}
                             </div>
                             <div class="col-2 text-end">
                                 {% if not test.state %}
@@ -61,10 +61,18 @@
                 {% for test in teacher_tests %}
                     <div class="p-3 my-2 rounded-2 text-gris border border-1">
                         <div class="row">
-                            <div class="col-6">
-                                <i class="fa-solid fa-list me-3"></i>{{ test.title }}
-                            </div>
                             <div class="col-5">
+                                <i class="fa-regular fa-pen-to-square me-3"></i>{{ test.title }}
+                            </div>
+                            <div class="col-2 d-flex align-items-center">
+                                <i class="fa-solid fa-calendar me-2" title="Creado"></i>
+                                <span> {{ test.created_at|date:"d/m/Y H:i" }}</span>
+                            </div>
+                            <div class="col-2 d-flex align-items-center">
+                                <i class="fa-solid fa-sync me-2" title="Creado"></i>
+                                <span> {{ test.updated_at|date:"d/m/Y H:i" }}</span>
+                            </div>
+                            <div class="col-2">
                                 <a href="#" 
                                     class="mx-1 text-decoration-none text-gris assign-test" 
                                     data-bs-toggle="modal" 
@@ -96,6 +104,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="modal fade" id="assignTestModal{{ test.id }}" tabindex="-1" aria-labelledby="assignTestModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
