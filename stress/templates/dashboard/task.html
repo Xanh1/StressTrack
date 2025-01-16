@@ -52,8 +52,14 @@
                 {% else %}
                     <div class="p-3 my-2 rounded-2 text-gris border border-1">
                         <div class="row">
-                            <div class="col-9">
+                            <div class="col-7">
                                 <i class="fa-solid fa-list me-3"></i>{{ task.title }}
+                            </div>
+                            <div class="col-2">
+                                <a href="{% url 'list-test' %}?open_modal=true" class="mx-1 text-decoration-none text-gris assign-test">
+                                    <i class="fa-regular fa-pen-to-square"></i>
+                                    Asignar test
+                                </a>
                             </div>
                             <div class="col-2 text-center">
                                 <div class="ms-4 bg-color-grisillo py-1 px-3 border d-inline rounded-3 fs-7">

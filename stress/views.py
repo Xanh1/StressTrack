@@ -202,7 +202,24 @@ def list_tests(request):
             notify(request, users=students, message='Se agregado un nuevo test', url='list-test')
 
             messages.success(request, "Se ha asignado el test correctamente")
-            return redirect('list-test')            
+            return redirect('list-test')
+        elif 'edit-test-form' in request.POST:
+            test_id = request.POST.get('test-id')
+            test_title = request.POST.get('title')
+            test = get_object_or_404(Test, id=test_id)
+
+            test.title = test_title
+            test.save()
+
+            test.questions.all().delete()
+            questions = request.POST.getlist('questions[]')
+
+            for question_text in questions:
+                if question_text.strip():
+                    Question.objects.create(description=question_text, test=test)
+
+            messages.success(request, 'Se ha actualizado el test correctamente')
+            return redirect('list-test')        
         else:
             test_name = request.POST.get('title')
             course = user.teaching_courses.first()
@@ -254,6 +271,7 @@ def list_tests(request):
         'teaching': teaching,
         'notifications': user.notifications.all(),
         'unread_notifications': user.notifications.filter(is_read=False).count(),
+        'open_modal': request.GET.get('open_modal', 'false') == 'true',
     }
 
     return render(request, 'dashboard/test.html', context)
