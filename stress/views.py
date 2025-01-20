@@ -79,6 +79,16 @@ def panel(request):
     stress = user.stress
     color = ""
 
+    recommendations = Recommendation.objects.filter(
+        min_percent__lte=stress, 
+        max_percent__gte=stress
+    )
+
+    if recommendations.exists():
+        recommendation = recommendations.order_by('?').first()
+    else:
+        recommendation = None
+
     if 0 <= stress <= 20:
         color = 'bg-good'
     elif 20 < stress <= 40:
@@ -91,6 +101,7 @@ def panel(request):
     context = {
         'name': user.first_name or "Usuario",
         'color': color,
+        'recommendation': recommendation,
         'stress': stress,
         'role': user.role,
         'top_3_stressed_students': top_3_stressed_students,
@@ -431,6 +442,7 @@ def test(request, test_id):
 
     if request.method == 'POST':
         tmp_stress = 0
+        num_questions = questions.count()
         for question in questions:
             selected_option_value = request.POST.get(f'question_{question.id}')
             if selected_option_value:
@@ -441,11 +453,15 @@ def test(request, test_id):
                 )
                 tmp_stress += int(selected_option_value)
         
-        request.user.stress = tmp_stress
+        avg_stress = tmp_stress / num_questions
+
+        request.user.stress = (avg_stress / 5) * 100
         request.user.save()
+
         if request.user.stress > 50:
             teacher = test.course.teacher
             notify(request, [teacher], f'El estudiante {request.user.first_name} tiene un nivel elevado de estres', 'course')
+        
         messages.success(request, 'El test se ha completado satisfactoriamente')    
         return redirect('list-test')
         
