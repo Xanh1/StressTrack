@@ -2,6 +2,8 @@
 
 {% load task_tag %}
 
+{% load test_tag %}
+
 {% block content %}
 
 {% include "elements/dashboard_sidebar.html" with role=role %}
@@ -69,7 +71,7 @@
                                 <span> {{ test.created_at|date:"d/m/Y H:i" }}</span>
                             </div>
                             <div class="col-2 d-flex align-items-center">
-                                <i class="fa-solid fa-sync me-2" title="Creado"></i>
+                                <i class="fa-solid fa-sync me-2" title="Actualizado"></i>
                                 <span> {{ test.updated_at|date:"d/m/Y H:i" }}</span>
                             </div>
                             <div class="col-2">
@@ -113,11 +115,38 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
+                                    <h1 class="fs-6">Asignar por curso</h1>
+                                    {% is_test_assigned_to_all_students test teaching as is_assigned_course %}
+
+                                    <form method="post" id="assignTestFormCourse" class="p-2 mb-4" data-test="{{ test.id }}">
+                                        {% csrf_token %}
+                                        <input hidden name="test-id" value="{{ test.id }}" >
+                                        <div class="form-check">
+                                            <input 
+                                                class="form-check-input" 
+                                                type="checkbox" 
+                                                name="course-form"
+                                                {% if is_assigned_course %}
+                                                    checked
+                                                {% endif %}
+                                            >
+                                            <label class="fs-7">
+                                                {{ teaching.name }}
+                                            </label>
+                                        </div>
+                                        <button type="submit" 
+                                                class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
+                                                name="assign-test-form-all"
+                                                id="assign-test-form-all"
+                                                value="assign-test-form-all"
+                                        >
+                                            Asignar
+                                        </button>
+                                    </form>
+
+                                    <h1 class="fs-6">Asignar por grupos</h1>
                                     {% if groups %}
-                                        <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
-                                            <i class="fas fa-info-circle"></i> Selecciona los grupos a los que deseas asignar este test.
-                                        </p>
-                                        <form method="post" id="assignTestForm" class="p-2" data-test="{{ test.id }}">
+                                        <form method="post" id="assignTestForm" class="p-2 mb-4" data-test="{{ test.id }}">
                                             {% csrf_token %}
                                             <h5 class="fs-6 mb-3">Lista de grupos</h5>
                                             {% for group in groups %}
@@ -150,10 +179,50 @@
                                             </button>
                                         </form>
                                     {% else %}
-                                        <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3">
+                                        <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3 mb-4">
                                             <i class="fas fa-info-circle"></i> Para poder asignar un test, es necesario crear primero al menos un grupo. Una vez que hayas creado un grupo, podrás asignar los tests.
                                         </p>
                                     {% endif %}
+                                    <h1 class="fs-6">Asignar por estudiante</h1>
+                                    {% if students %}
+                                        <form method="post" id="assignTestFormUser" class="p-2 mb-4" data-test="{{ test.id }}">
+                                            {% csrf_token %}
+                                            <h5 class="fs-6 mb-3">Lista de estudiantes</h5>
+                                            {% for student in students %}
+                                                {% is_test_assigned_to_user test student as is_assigned_user %}
+                                                <div class="form-check">
+                                                    <input 
+                                                        class="form-check-input" 
+                                                        type="checkbox" 
+                                                        name="students[]" 
+                                                        value="{{ student.id }}" 
+                                                        id="student{{ student.id }}"
+
+                                                        {% if is_assigned_user %}
+                                                            checked
+                                                        {% endif %}
+                                                    >
+                                                    <label class="fs-7" for="student{{ student.id }}">
+                                                        {{ student.first_name }} {{ student.last_name }}
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
+                                            <input hidden name="test-id" value="{{ test.id }}" >
+                                            <button type="submit" 
+                                                    class="fs-7 bg-dark text-white border border-dark rounded-2 py-1 px-3 mt-4"
+                                                    name="assign-test-form-user"
+                                                    id="assign-test-form-user"
+                                                    value="assign-test-form-user"
+                                            >
+                                                Asignar
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <p class="fs-8 text-muted mb-3 p-2 bg-inf rounded-3 mb-4">
+                                            <i class="fas fa-info-circle"></i> No existen estudiantes matriculados en el curso por el momento.
+                                        </p>
+                                    {% endif %}
+                                    
                                 </div>
                             </div>
                         </div>

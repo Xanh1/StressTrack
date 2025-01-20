@@ -203,6 +203,49 @@ def list_tests(request):
 
             messages.success(request, "Se ha asignado el test correctamente")
             return redirect('list-test')
+        
+        elif 'assign-test-form-user' in request.POST:
+
+            test_id = request.POST.get('test-id')
+            test = get_object_or_404(Test, id=test_id)
+
+            selected_student_ids = request.POST.getlist('students[]')
+
+            selected_students = CustomUser.objects.filter(id__in=selected_student_ids)
+
+            for student in CustomUser.objects.all():
+                student.tests.remove(test)
+
+            for student in selected_students:
+                student.tests.add(test)
+
+            notify(request, users=selected_students, message='Se agregado un nuevo test', url='list-test')
+            messages.success(request, "Test asignado/desasignado correctamente.")
+
+            return redirect('list-test')
+        
+        elif 'assign-test-form-all' in request.POST:
+            is_checked = 'course-form' in request.POST
+    
+            test_id = request.POST.get('test-id')
+            test = get_object_or_404(Test, id=test_id)
+
+            course = user.teaching_courses.first()
+
+            students = course.students.all()
+
+            if is_checked:
+                for student in students:
+                    student.tests.add(test)
+                notify(request, users=students, message='Se agregado un nuevo test', url='list-test')
+                messages.success(request, "Se ha asignado el test correctamente")
+            else:
+                for student in students:
+                    student.tests.remove(test)
+                messages.success(request, "Se ha desasignado el test correctamente")
+
+            return redirect('list-test')
+        
         elif 'edit-test-form' in request.POST:
             test_id = request.POST.get('test-id')
             test_title = request.POST.get('title')
@@ -233,12 +276,19 @@ def list_tests(request):
             
             messages.success(request, 'Se ha creado el test')
             return redirect('list-test')
-
-    if team:
-        tests = team.tests.all()
-    else:
-        tests = None
     
+    if team:
+        tests_group = team.tests.all()
+    else:
+        tests_group = None
+    
+    tests_user = user.tests.all()
+
+    if tests_group:
+        tests = tests_group.union(tests_user)
+    else:
+        tests = tests_user
+
     list_test = []
 
     if tests:
@@ -263,6 +313,11 @@ def list_tests(request):
         groups = None
         teaching = None
 
+    if user.role == 'teacher':
+        students = teaching.students.all()
+    else:
+        students = None
+
     context = {
         'tests': list_test,
         'role': user.role,
@@ -270,6 +325,7 @@ def list_tests(request):
         'groups': groups,
         'teaching': teaching,
         'notifications': user.notifications.all(),
+        'students': students,
         'unread_notifications': user.notifications.filter(is_read=False).count(),
         'open_modal': request.GET.get('open_modal', 'false') == 'true',
     }
@@ -449,12 +505,6 @@ def delete_team(request, team_id):
     messages.success(request, 'El grupo se ha eliminado correctamente')
     return redirect('course')
 
-
-@login_required
-def prueba(request):
-    return render(request, 'aiuda.html')
-
-
 @login_required
 def mark_notification_as_read(request, notification_id):
     notification = get_object_or_404(Notification, id=notification_id, user=request.user)
@@ -464,7 +514,6 @@ def mark_notification_as_read(request, notification_id):
         notification.save()
     
     return redirect(notification.url)
-
 
 @login_required
 def notify(request, users, message, url):

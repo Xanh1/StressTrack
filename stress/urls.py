@@ -49,7 +49,4 @@ urlpatterns = [
     
     # recommendation
     path('recommendation/delete/<int:reco_id>/', views.delete_recommendation, name='delete-recommendation'),
-
-    # pruebas
-    path('prueba/', views.prueba, name='prueba'),
 ]
