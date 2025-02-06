@@ -1,0 +1,148 @@
+{% extends "base/dashboard_base.html" %}
+
+{% block content %}
+
+{% include "elements/dashboard_sidebar.html" with role=role %}
+
+{% include "elements/messages.html" %}
+
+<main class="main p-4 pt-3 pe-5">
+    <div class="my-4">
+        <div class="row">
+            <div class="col-12 p-0">
+                <h1 class="m-0">Estadísticas</h1>
+            </div>
+        </div>
+        <label class="text-grisillo fw-bold my-2">Niveles de estrés</label>
+        <div>
+            <label class="text-grisillo fw-bold my-2 fs-5">Curso</label>
+            {% if role == 'student' %}
+                <div class="stats">
+                    <canvas id="student"></canvas>
+                </div>
+            {% else %}
+                <div class="stats mb-5">
+                    <canvas id="course"></canvas>
+                </div>
+                {% for team_name, data in teams_stats.items %}
+                    <label class="text-grisillo fw-bold my-2 fs-5">Grupo: {{ team_name }}</label>
+                    <div class="stats mb-5">
+                        <canvas id="chart-{{ forloop.counter }}"></canvas>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</main>
+
+{% if role == 'student' %}
+<script>
+
+    const student = document.getElementById('student').getContext('2d');
+
+    const labels = {{ labels| safe }};
+    const scores = {{ scores| safe }};
+
+    const myChart = new Chart(student, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Niveles de Estrés',
+                data: scores,
+                backgroundColor: 'rgba(75, 192, 192, 0.4)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: true
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+</script>
+
+{% else %}
+
+<script>
+
+    const course = document.getElementById('course').getContext('2d');
+
+    const labels_course = {{ labels_course| safe }};
+    const scores_course = {{ scores_course| safe }};
+
+    const graphCourse = new Chart(course, {
+        type: 'bar',
+        data: {
+            labels: labels_course,
+            datasets: [{
+                label: 'Nivel de estres del Curso',
+                data: scores_course,
+                backgroundColor: 'rgba(75, 192, 192, 0.4)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 2,
+                fill: true
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    const teamsStats = {
+        {% for team_name, data in teams_stats.items %}
+            "{{ team_name }}": {
+                labels: {{ data.labelsg|safe }},
+                scores: {{ data.scoresg|safe }}
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    };
+
+    let counter = 1;
+    for (const [teamName, data] of Object.entries(teamsStats)) {
+        const ctx = document.getElementById('chart-' + counter).getContext('2d');
+        console.log(data)
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Nivel de estres del Grupo',
+                    data: data.scores,
+                    backgroundColor: 'rgba(75, 192, 192, 0.4)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Porcentaje de Estrés'
+                        }
+                    }
+                }
+            }
+        });
+        counter++;
+    }
+
+
+</script>
+
+{% endif %}
+
+
+{% endblock %}

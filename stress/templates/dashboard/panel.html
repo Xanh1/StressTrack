@@ -12,8 +12,7 @@
             {% if role == 'student' %}
                 <div class="col-10">
                     <h1>Hola {{ name }}</h1>
-                    <p class="fs-6 m-0"> {{ recommendation.description }}
-                    </p>
+                    <p class="fs-6 m-0"> {{ recommendation.description }}</p>
                 </div>
                 <div class="col-2 text-center">
                     <h1>{{ stress }}</h1>
@@ -82,7 +81,8 @@
                 {% endif %}
         </div>
 
-    {% else %}
+    {% elif role == 'teacher' %}
+        
         <div class="mb-4">
             <label class="text-grisillo fw-bold my-2">Estudiantes <i class="fas fa-info-circle fs-8" title="Lista de los estudiante con mas nivel de estres del curso"></i></label>
             {% if not top_3_stressed_students %}
@@ -130,6 +130,80 @@
                             </div>
                         </div>
                 </div>
+            {% endif %}
+        </div>
+
+    {% else %}
+
+        <div class="mb-4">
+            <label class="text-grisillo fw-bold my-2">Cursos <i class="fas fa-info-circle fs-8" title="Lista de Cursos"></i></label>
+            {% if not courses %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No existen cursos por el momento.
+                </div>
+            {% else %}
+                {% for course in courses %}
+                <div class="p-3 rounded-2 text-gris border border-1 my-2">
+                    <div class="row">
+                        <div class="col-6">
+                            <i class="fa-solid fa-book me-3"></i>{{ course.name }}
+                        </div>
+                        <div class="col-6 text-end">
+                            {{ course.teacher.first_name }} {{ course.teacher.last_name }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="mb-4">
+            <label class="text-grisillo fw-bold my-2">Profesores <i class="fas fa-info-circle fs-8" title="Lista de Profesores"></i></label>
+            {% if not professors %}
+                <div class="bg-inf p-3 rounded-2 text-gris">
+                    <i class="fas fa-info-circle"></i> No existen profesores por el momento.
+                </div>
+            {% else %}
+                {% for teacher in professors %}
+                    <div class="p-3 my-2 rounded-2 text-gris border border-1">
+                        <div class="row">
+                            <div class="col-3">
+                                {% if teacher.role == 'student' %}
+                                    <i class="fa-solid fa-user me-3"></i>
+                                {% else %}
+                                    <i class="fa-solid fa-user-tie me-3"></i>
+                                {% endif %}
+                                {{ teacher.first_name }} {{ teacher.last_name }}
+                            </div>
+                            <div class="col-2 text-center">
+                                {{ teacher.dni }}
+                            </div>
+                            <div class="col-3 text-center ">
+                                {{ teacher.email }}
+                            </div>
+                            <div class="col-2 text-center">
+                                {% if teacher.role == 'student' %}
+                                    Estudiante
+                                {% elif teacher.role == 'teacher' %}
+                                    Profesor
+                                {% else %}
+                                    Administrador
+                                {% endif %}
+                            </div>
+                            <div class="col-2 text-end ">
+                                {% if teacher.is_active %}
+                                    <div class="ms-4 bg-active py-1 px-3 d-inline rounded-3 fs-7">
+                                        activo
+                                    </div>
+                                {% else %}
+                                    <div class="ms-4 bg-incative py-1 px-3 d-inline rounded-3 fs-7">
+                                        inactivo
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
             {% endif %}
         </div>
 

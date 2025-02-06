@@ -18,6 +18,7 @@ urlpatterns = [
     path('recommendation/', views.recommendation, name='recommendation'),
     path('users/', views.user_admin, name='users'),
     path('courses/', views.course_admin, name='courses'),
+    path('stats/', views.stats, name='stats'),
     
     # course
     path('course/delete/<int:course_id>', views.delete_course , name='delte-course'),

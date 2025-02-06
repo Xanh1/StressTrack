@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout, update_session_auth_hash
 from .forms import CustomUserCreationForm, CustomAuthenticationForm, CustomUserUpdateForm, CustomPasswordChangeForm, CustomUserCreationRoleForm, CreateCourseForm, RecommendationForm
-from .models import Test, Option, Answer, Task, Team, CustomUser, Question, Notification, Course, Recommendation
+from .models import TestResult, Test, Option, Answer, Task, Team, CustomUser, Question, Notification, Course, Recommendation
 from django.contrib.auth.decorators import login_required
 from .utils import test_resolve
 from django.db.models import Avg
@@ -33,6 +33,9 @@ def log_in(request):
             if user is not None:
                 login(request, user)
                 return redirect('panel')
+        else:
+            messages.error(request, "Credenciales incorrectas. Inténtalo de nuevo")
+            return redirect('login')
     else:
         form = CustomAuthenticationForm()
     return render(request, 'login.html', {'form': form})
@@ -64,6 +67,8 @@ def panel(request):
     top_3_stressed_students = None
     average_stress = None
     course_teaching = user.teaching_courses.first()
+    courses = Course.objects.all()
+    professors = CustomUser.objects.filter(role='teacher').all()
 
     if course_teaching:
         students = course_teaching.students.filter(stress__gt=0) 
@@ -78,16 +83,8 @@ def panel(request):
 
     stress = user.stress
     color = ""
-
-    recommendations = Recommendation.objects.filter(
-        min_percent__lte=stress, 
-        max_percent__gte=stress
-    )
-
-    if recommendations.exists():
-        recommendation = recommendations.order_by('?').first()
-    else:
-        recommendation = None
+    
+    recommendations = user.recommendation
 
     if 0 <= stress <= 20:
         color = 'bg-good'
@@ -101,7 +98,7 @@ def panel(request):
     context = {
         'name': user.first_name or "Usuario",
         'color': color,
-        'recommendation': recommendation,
+        'recommendation': recommendations,
         'stress': stress,
         'role': user.role,
         'top_3_stressed_students': top_3_stressed_students,
@@ -109,6 +106,8 @@ def panel(request):
         'course_teaching': course_teaching,
         'notifications': user.notifications.all(),
         'unread_notifications': user.notifications.filter(is_read=False).count(),
+        'courses': courses,
+        'professors': professors,
     }
 
     if tasks:
@@ -447,20 +446,35 @@ def test(request, test_id):
             selected_option_value = request.POST.get(f'question_{question.id}')
             if selected_option_value:
                 Answer.objects.create(
-                    student=request.user,
+                    student=user,
                     question=question,
                     option=int(selected_option_value)
                 )
                 tmp_stress += int(selected_option_value)
         
         avg_stress = tmp_stress / num_questions
+        stress_percentage = (avg_stress / 5) * 100
 
-        request.user.stress = (avg_stress / 5) * 100
-        request.user.save()
+        user.stress = stress_percentage
+
+        recommendation = Recommendation.objects.filter(
+            min_percent__lte=stress_percentage - 5, 
+            max_percent__gte=stress_percentage + 5
+        ).first()
+
+        user.recommendation = recommendation
+        
+        user.save()
+
+        TestResult.objects.create(
+            student=user,
+            test=test,
+            stress_percentage=stress_percentage
+        )
 
         if request.user.stress > 50:
             teacher = test.course.teacher
-            notify(request, [teacher], f'El estudiante {request.user.first_name} tiene un nivel elevado de estres', 'course')
+            notify(request, [teacher], f'El estudiante {user.first_name} tiene un nivel elevado de estres', 'course')
         
         messages.success(request, 'El test se ha completado satisfactoriamente')    
         return redirect('list-test')
@@ -543,6 +557,11 @@ def recommendation(request):
     
     form = RecommendationForm()
     
+    if user.role == 'teacher':
+        studens = user.teaching_courses.first().students.all() if user.teaching_courses.first() else None
+    else:
+        studens = None
+
     if request.method == 'POST':
 
         if 'form-update' in request.POST:
@@ -557,7 +576,18 @@ def recommendation(request):
 
             messages.success(request, 'La recomendación se actualizo correctamente')
             return redirect('recommendation')
+        
+        elif 'form-assign' in request.POST:
+            student = get_object_or_404(CustomUser, id=request.POST.get('student'))
+            recommendation = get_object_or_404(Recommendation, id=request.POST.get('recommendation'))
+            
+            student.recommendation = recommendation
 
+            student.save()
+
+            messages.success(request, 'La recomendación se asignó correctamente')
+
+            return redirect('recommendation')
         else:
             form = RecommendationForm(request.POST)
             if form.is_valid():
@@ -570,7 +600,10 @@ def recommendation(request):
     context = {
         'role': user.role,
         'recommendations': recommendations,
+        'students': studens,
         'form': form,
+        'notifications': user.notifications.all(),
+        'unread_notifications': user.notifications.filter(is_read=False).count(),
     }
     
     return render(request, 'dashboard/recommendation.html', context)
@@ -616,6 +649,8 @@ def user_admin(request):
         'role': user.role,
         'users': users,
         'form': form,
+        'notifications': user.notifications.all(),
+        'unread_notifications': user.notifications.filter(is_read=False).count(),
     }
 
     return render(request, 'dashboard/user.html', context)
@@ -681,6 +716,8 @@ def course_admin(request):
         'form': form,
         'teachers': teachers,
         'students': students,
+        'notifications': user.notifications.all(),
+        'unread_notifications': user.notifications.filter(is_read=False).count(),
     }
 
     return render(request, 'dashboard/course-admin.html', context)
@@ -706,3 +743,79 @@ def desactivate_account_notification(request):
 
     return redirect('profile')
 
+from django.db.models import Avg, F
+
+@login_required
+def stats(request):
+
+    user = request.user
+    role = user.role
+
+    if role == 'student':
+        list_test_results = user.test_results.all()
+        labels = [result.test.title for result in list_test_results]
+        scores = [result.stress_percentage for result in list_test_results]
+    else:
+        labels = []
+        scores = []
+    
+    if role == 'teacher':
+        course = user.teaching_courses.first()
+
+        aggregated_results = (
+            TestResult.objects
+            .filter(test__course=course)
+            .values('test__title')
+            .annotate(avg_stress=Avg('stress_percentage'))
+        )
+
+        labels_course = [entry['test__title'] for entry in aggregated_results]
+        scores_course = [entry['avg_stress'] for entry in aggregated_results]
+
+        teams_stats = {}
+
+        for team in course.teams.all():
+            team_students = team.members.all()
+
+            aggregated_results = (
+                TestResult.objects
+                .filter(
+                    student__in=team_students,
+                    test__Team=team
+                )
+                .values('test__title')
+                .annotate(avg_stress=Avg('stress_percentage'))
+                .order_by('test__title') 
+            )
+
+            labelsg = []
+            scoresg = []
+
+            for entry in aggregated_results:
+                labelsg.append(entry['test__title'])
+                scoresg.append(entry['avg_stress'])
+
+            teams_stats[team.name] = {
+                'labelsg': labelsg,
+                'scoresg': scoresg,
+            }
+        
+        print(teams_stats)
+
+    else:
+        labels_course = []
+        scores_course = []
+        teams_stats = {}
+
+    context = {
+        'role': role,
+        'labels': labels,
+        'scores': scores,
+        'labels_course': labels_course,
+        'scores_course': scores_course,
+        'teams_stats': teams_stats,
+        'notifications': user.notifications.all(),
+        'unread_notifications': user.notifications.filter(is_read=False).count(),
+    }
+
+    return render(request, 'dashboard/statistics.html', context)

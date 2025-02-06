@@ -9,6 +9,8 @@
                         class="fa-solid fa-list-check"></i></a></li>
             <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Curso" href="{% url 'course' %}"><i
                         class="fa-solid fa-book"></i></a></li>
+            <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Estadísticas" href="{% url 'stats' %}">
+                            <i class="fa-solid fa-chart-simple"></i></a></li>
         </ul>
     {% elif role == 'teacher' %}
         <ul class="list-unstyled d-flex flex-column justify-content-center">
@@ -21,6 +23,8 @@
                         class="fa-solid fa-book"></i></a></li>
             <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Recomendaciones" href="{% url 'recommendation' %}">
                         <i class="fa-regular fa-comment"></i></a></li>
+            <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Estadísticas" href="{% url 'stats' %}">
+                <i class="fa-solid fa-chart-simple"></i></a></li>
         </ul>
     {% elif role == 'superuser' %}
     <ul class="list-unstyled d-flex flex-column justify-content-center">
@@ -32,6 +36,7 @@
                     class="fa-solid fa-book"></i></a></li>
         <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Recomendaciones" href="{% url 'recommendation' %}">
                     <i class="fa-regular fa-comment"></i></a></li>
+        <li class=" py-2"><a class="text-decoration-none text-dark fs-5_5" title="Tests" href="{% url 'list-test' %}"><i class="fa-regular fa-pen-to-square"></i></a></li>
     </ul>
     {% endif %}
     <ul class="list-unstyled">
