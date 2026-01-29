@@ -1,0 +1,35 @@
+name: Análisis Dinámico (DAST)
+on: [push, pull_request]
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+    name: Escaneo con OWASP ZAP
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependencias
+        run: |
+          pip install -r requirements.txt
+          pip install gunicorn  # Para que sea más estable que runserver
+
+      - name: Levantar la App (Background)
+        run: |
+          # Importante: Asegúrate de que las migraciones estén al día
+          python manage.py migrate
+          # Levantamos el servidor en el puerto 8080
+          python manage.py runserver 8080 & 
+          # Esperamos a que el servidor responda
+          sleep 10 
+
+      - name: ZAP Scan (Full Scan)
+        uses: zaproxy/action-full-scan@v0.10.0
+        with:
+          target: 'http://localhost:8080/'
+          artifact_name: 'zap_report'
