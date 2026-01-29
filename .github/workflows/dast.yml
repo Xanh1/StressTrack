@@ -32,7 +32,17 @@ jobs:
           sleep 10 
 
       - name: ZAP Scan (Full Scan)
-        uses: zaproxy/action-full-scan@v0.10.0
+        uses: zaproxy/action-full-scan@v0.12.0 # Subimos de versión
         with:
           target: 'http://localhost:8080/'
-          artifact_name: 'zap_report'
+          # Quitamos artifact_name de aquí para hacerlo manualmente
+          issue_title: 'Reporte de Seguridad DAST'
+
+      - name: Subir Reporte Final
+        uses: actions/upload-artifact@v4 # Usamos la versión más estable
+        with:
+          name: reporte-seguridad-zap # Cambiamos el nombre por si las moscas
+          path: |
+            report_html.html
+            report_md.md
+            report_json.json
