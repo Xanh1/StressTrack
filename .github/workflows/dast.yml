@@ -5,6 +5,9 @@ jobs:
   zap_scan:
     runs-on: ubuntu-latest
     name: Escaneo con OWASP ZAP
+    permissions:
+      contents: read
+      issues: write
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
